@@ -134,6 +134,11 @@ async def test_an_older_one_changes_nothing_not_even_the_trip_in_progress(
     assert state(hass, entry, "binary_sensor", "trip_in_progress").state == STATE_ON
     assert state(hass, entry, "sensor", "last_trip_distance").state == "8.25"
     assert state(hass, entry, "binary_sensor", "parked_at_home").state == STATE_ON
+    # not even inside: the entities are redrawn only on the next update, so
+    # a value changed without a signal would show up with the next live
+    assert await send(message("live")) == 200
+    assert state(hass, entry, "binary_sensor", "trip_in_progress").state == STATE_ON
+    assert state(hass, entry, "binary_sensor", "parked_at_home").state == STATE_ON
 
     # the same trip as the last one counts (>=): all of it, together
     same = recovered(trip("2026-10-11T18:00:00Z", ended_at_home=False))

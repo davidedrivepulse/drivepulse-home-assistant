@@ -84,6 +84,8 @@ TRIP_FIELDS = (
     "avg_consumption_kwh_100km",
     "odometer_km",
 )
+# Read by Parked at home (_at_home), never kept in the last trip summary.
+TRIP_AT_HOME = "ended_at_home"
 
 
 def _number(value: Any) -> float | int | None:
@@ -393,9 +395,9 @@ class DrivePulseHub:
         trip_end, so turning the sensor off at trip_start would leave it off
         with the car in the garage.
         """
-        if "ended_at_home" not in trip:
+        if TRIP_AT_HOME not in trip:
             return
-        value = trip["ended_at_home"]
+        value = trip[TRIP_AT_HOME]
         if not isinstance(value, bool):
             vehicle.at_home = None
             return

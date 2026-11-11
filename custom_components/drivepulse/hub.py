@@ -6,6 +6,7 @@ import logging
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 
 from aiohttp import web
@@ -14,17 +15,20 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.storage import Store
+from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
 
 from .const import (
     DEFAULT_VEHICLE_NAME,
     DOMAIN,
     EVENT_TRIP_END,
+    EVENT_TRIP_RESENT,
     EVENT_TRIP_START,
     KNOWN_MESSAGES,
     MAX_VEHICLES,
     MSG_TEST,
     MSG_TRIP_END,
+    MSG_TRIP_RESEND,
     MSG_TRIP_START,
 )
 
@@ -100,6 +104,32 @@ def _text(value: Any, limit: int = 64) -> str | None:
 def _plain(value: Any) -> bool:
     """A number or a short string: the only shapes forwarded from a payload."""
     return _number(value) is not None or isinstance(value, str)
+
+
+def _trip_summary(trip: dict[str, Any]) -> dict[str, Any]:
+    """The trip fields kept and forwarded: no id, no route, nothing unknown."""
+    return {key: trip[key] for key in TRIP_FIELDS if key in trip and _plain(trip[key])}
+
+
+def _trip_time(trip: dict[str, Any] | None) -> datetime | None:
+    """When a trip ended, or started if it has no end; None if neither parses."""
+    for key in ("end", "start"):
+        value = (trip or {}).get(key)
+        when = dt_util.parse_datetime(value) if isinstance(value, str) else None
+        if when is not None:
+            return when if when.tzinfo else when.replace(tzinfo=dt_util.UTC)
+    return None
+
+
+def _more_recent(trip: dict[str, Any], last: dict[str, Any] | None) -> bool:
+    """Whether a resent trip should become the last trip."""
+    if not last:
+        return True
+    new = _trip_time(trip)
+    if new is None:
+        return False
+    old = _trip_time(last)
+    return old is None or new > old
 
 
 @dataclass
@@ -240,7 +270,9 @@ class DrivePulseHub:
             _LOGGER.debug("Ignoring unknown DrivePulse event %r", event)
             return None
         if event == MSG_TEST:
-            return None
+            return self._test(payload)
+        if event == MSG_TRIP_RESEND:
+            return self._resend(payload)
 
         vehicle = self._vehicle_for(payload)
         if vehicle is None:
@@ -309,20 +341,63 @@ class DrivePulseHub:
             vehicle.in_trip = False
             trip = payload.get("trip")
             if isinstance(trip, dict):
-                vehicle.last_trip = {
-                    key: trip[key]
-                    for key in TRIP_FIELDS
-                    if key in trip and _plain(trip[key])
-                }
+                vehicle.last_trip = _trip_summary(trip)
         if event in (MSG_TRIP_START, MSG_TRIP_END):
             self._fire_trip_event(vehicle, event, payload)
 
         self._async_save()
         async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
 
-    def _fire_trip_event(
-        self, vehicle: Vehicle, event: str, payload: dict[str, Any]
-    ) -> None:
+    @callback
+    def _test(self, payload: dict[str, Any]) -> web.Response | None:
+        """The app's "Test send" button.
+
+        The vehicle's device and its entities appear (without values), so the
+        user sees the integration work before the first trip. Nothing else:
+        a test is not a reading of the car, so no value, no adapter flag, no
+        trip in progress, no last trip and no event on the bus.
+        """
+        known = len(self.vehicles)
+        if self._vehicle_for(payload) is None:
+            return web.Response(status=400, text="too many vehicles")
+        if len(self.vehicles) != known:
+            self._async_save()
+        return None
+
+    @callback
+    def _resend(self, payload: dict[str, Any]) -> web.Response | None:
+        """A saved trip the user sent again from the app.
+
+        Not through _apply: every reading at the top of this message is null,
+        so it would blank the sensors and turn "adapter connected" off, and it
+        must not end a trip in progress either. Only the last trip can change,
+        and only to a more recent one; the bus gets drivepulse_trip_resent,
+        never drivepulse_trip_end.
+        """
+        trip = payload.get("trip")
+        if not isinstance(trip, dict):
+            return web.Response(status=400, text="trip_resend without a trip")
+        vehicle = self._vehicle_for(payload)
+        if vehicle is None:
+            return web.Response(status=400, text="too many vehicles")
+        summary = _trip_summary(trip)
+        if _more_recent(summary, vehicle.last_trip):
+            vehicle.last_trip = summary
+            self._async_save()
+            async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
+        sent_at = payload.get("sent_at")
+        self.hass.bus.async_fire(
+            EVENT_TRIP_RESENT,
+            {
+                "device_id": self._device_id(vehicle),
+                "vehicle": vehicle.name,
+                "sent_at": sent_at if _plain(sent_at) else None,
+                "trip": summary,
+            },
+        )
+        return None
+
+    def _device_id(self, vehicle: Vehicle) -> str | None:
         # Not `async_get_device(identifiers=...)`: it is deprecated (identifiers
         # are no longer unique across config entries) and raises on recent Home
         # Assistant. Our devices are the ones of this entry, so look there.
@@ -337,8 +412,13 @@ class DrivePulseHub:
             ),
             None,
         )
+        return device.id if device else None
+
+    def _fire_trip_event(
+        self, vehicle: Vehicle, event: str, payload: dict[str, Any]
+    ) -> None:
         data: dict[str, Any] = {
-            "device_id": device.id if device else None,
+            "device_id": self._device_id(vehicle),
             "vehicle": vehicle.name,
         }
         # Every field is always there (None when the car did not give it), so

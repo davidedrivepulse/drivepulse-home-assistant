@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/davideguida0093/drivepulse-home-assistant/main/schema/drivepulse-schema-1.json",
   "title": "DrivePulse webhook message, schema 1",
-  "description": "The JSON body the DrivePulse app POSTs to a webhook (Home Assistant or any other receiver). Every key below is always present, with null when the car did not give that value, except `custom` (sent from app 3.5.9) and `trip` (only with `trip_end`). Units are always metric. The message never carries a GPS position, an address or the VIN. A newer app can add keys, here, in `extended` and in `trip`: ignore the ones you do not know. None of them will ever be a position, an address or the VIN.",
+  "description": "The JSON body the DrivePulse app POSTs to a webhook (Home Assistant or any other receiver). Every key below is always present, with null when the car did not give that value, except `custom` (sent from app 3.5.9) and `trip` (only with `trip_end` and `trip_resend`). Units are always metric. The message never carries a GPS position, an address or the VIN. A newer app can add keys, here, in `extended` and in `trip`: ignore the ones you do not know. None of them will ever be a position, an address or the VIN.",
   "type": "object",
   "properties": {
     "source": {
@@ -14,8 +14,8 @@
       "const": 1
     },
     "event": {
-      "description": "live: periodic while the adapter is connected (only if live sending is on). trip_start: a trip started. trip_end: a trip ended and was saved; carries `trip`. test: the test button in the app.",
-      "enum": ["live", "trip_start", "trip_end", "test"]
+      "description": "live: periodic while the adapter is connected (only if live sending is on). trip_start: a trip started. trip_end: a trip ended and was saved; carries `trip`. trip_resend: the user sent a saved trip again by hand (from app 3.6.2); carries `trip`, every other value is null and `obd_connected` is false: it is not a reading of the car now, and not a trip that just ended. test: the test button in the app.",
+      "enum": ["live", "trip_start", "trip_end", "trip_resend", "test"]
     },
     "sent_at": {
       "description": "When the app built the message, UTC (for example 2026-10-10T08:00:00.000Z).",
@@ -27,11 +27,11 @@
       "const": "metric"
     },
     "vehicle": {
-      "description": "The vehicle's name as written in the app. Not the VIN.",
+      "description": "The vehicle's name as written in the app (with trip_resend: the vehicle of that trip). Not the VIN.",
       "type": ["string", "null"]
     },
     "obd_connected": {
-      "description": "Whether the app was talking to the car when it built the message. False with the test button away from the car, and at trip_end when the engine is already off.",
+      "description": "Whether the app was talking to the car when it built the message. False with the test button away from the car, at trip_end when the engine is already off, and always with trip_resend.",
       "type": "boolean"
     },
     "obd_at": {
@@ -154,7 +154,7 @@
       }
     },
     "trip": {
-      "description": "The trip summary, only with trip_end. No start or end place, no route. A newer app can add keys.",
+      "description": "The trip summary, only with trip_end and trip_resend. No start or end place, no route. A newer app can add keys.",
       "type": "object",
       "properties": {
         "id": { "description": "The trip's number in the app.", "type": ["integer", "null"] },
@@ -182,7 +182,7 @@
     "odometer_km", "dtc", "extended"
   ],
   "if": {
-    "properties": { "event": { "const": "trip_end" } },
+    "properties": { "event": { "enum": ["trip_end", "trip_resend"] } },
     "required": ["event"]
   },
   "then": { "required": ["trip"] },

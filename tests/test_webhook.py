@@ -218,10 +218,10 @@ async def test_bad_bodies_are_refused_and_change_nothing(
     assert not dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
 
 
-async def test_test_and_unknown_events_are_accepted_and_ignored(
+async def test_unknown_events_are_accepted_and_ignored(
     hass: HomeAssistant, entry, send
 ) -> None:
-    assert await send(message("test")) == 200
+    # (the test button has its own tests: tests/test_test_button.py)
     assert await send(message("something_new")) == 200
     assert await send({"no": "event"}) == 200
     assert not dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)

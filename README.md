@@ -29,12 +29,15 @@ When the car does not give a value, the entity shows **Unavailable** instead of 
 
 ### Events for automations
 
-Two events are fired on the Home Assistant bus, so you can automate "the car left" and "the car arrived":
+These events are fired on the Home Assistant bus, so you can automate "the car left" and "the car arrived":
 
 | Event | When | Data |
 |---|---|---|
 | `drivepulse_trip_start` | a trip starts | `vehicle`, `device_id`, `fuel_level_pct`, `odometer_km`, `battery_voltage`, ... |
 | `drivepulse_trip_end` | a trip ends | the same, plus `trip` (distance, duration, average and maximum speed, consumption) |
+| `drivepulse_trip_resent` | you send a saved trip again from the trip's page in the app | `vehicle`, `device_id`, `sent_at`, `trip` |
+
+A trip sent again is never a `drivepulse_trip_end`, so "the car arrived" automations do not run for an old trip. It becomes the **Last trip** only if it is more recent than the one Home Assistant has, and it changes no other entity.
 
 Only the numbers above are sent: **no GPS position, no VIN, no addresses**. Home Assistant already knows where your phone is.
 
@@ -240,8 +243,10 @@ DrivePulse is in the HACS default list, so no custom repository is needed. On Ho
 ### 3. Paste the address in the app
 
 1. In the DrivePulse app open **Send to Home Assistant** in the settings, turn on **Send the data**, and paste the address in **Webhook address**.
-2. Tap **Test send**: the app says the server answered. 
-3. Drive. The device appears in Home Assistant with the first message of the first trip.
+2. Tap **Test send**: the app says the server answered, and the car's device appears in Home Assistant with its entities, still without values. The test never sends a trip and never changes the last trip.
+3. Drive. The values fill in with the first trip.
+
+To see a trip you already drove, open it in the app and choose **Send to Home Assistant** from its export menu (only while sending is on).
 
 That is all. No YAML.
 

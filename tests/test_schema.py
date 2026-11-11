@@ -91,6 +91,8 @@ TRIP = {
     "odometer_km": None,
 }
 TRIP_END = {**TEST, "event": "trip_end", "trip_km": 21.46, "trip": TRIP}
+# A saved trip sent again by hand: the trip apart, every reading null.
+TRIP_RESEND = {**TEST, "event": "trip_resend", "vehicle": "My car", "trip": TRIP}
 
 
 def _errors(message: dict) -> list[str]:
@@ -174,6 +176,7 @@ def test_electric_trip_end_and_an_app_without_custom_are_valid() -> None:
     assert _errors({k: v for k, v in LIVE.items() if k != "custom"}) == []
     assert _errors(LIVE) == []
     assert _errors(TRIP_END) == []
+    assert _errors(TRIP_RESEND) == []
 
 
 def _trip(**changes: object) -> dict:
@@ -187,6 +190,11 @@ def _trip(**changes: object) -> dict:
     [
         ("a trip on a live message", {**LIVE, "trip": TRIP}),
         ("trip_end without a trip", {k: v for k, v in TRIP_END.items() if k != "trip"}),
+        (
+            "trip_resend without a trip",
+            {k: v for k, v in TRIP_RESEND.items() if k != "trip"},
+        ),
+        ("a trip on a test message", {**TEST, "trip": TRIP}),
         ("a missing key", {k: v for k, v in LIVE.items() if k != "obd_at"}),
         ("schema 2", {**LIVE, "schema": 2}),
         ("a null extended reading", {**LIVE, "extended": {"oil_temp_c": None}}),

@@ -1,7 +1,9 @@
 """Parked at home: where the last trip ended, as a yes or no from the phone.
 
-The app sends trip.ended_at_home (true, false or null) at trip_end only,
-with its switch on (off by default). Never a position.
+The app sends trip.ended_at_home (true, false or null) with trip_end and
+trip_resend, with its switch on (off by default). Never a position. It
+belongs to the last trip, so a resend changes it only when it becomes the
+last trip.
 """
 
 from __future__ import annotations
@@ -62,7 +64,7 @@ async def test_null_is_unknown_and_a_missing_key_changes_nothing(
     assert at_home_state(hass, entry) == STATE_OFF
 
 
-async def test_trip_start_live_test_and_resend_do_not_touch_it(
+async def test_trip_start_live_and_test_do_not_touch_it(
     hass: HomeAssistant, entry, send
 ) -> None:
     await send(end(True))
@@ -73,7 +75,33 @@ async def test_trip_start_live_test_and_resend_do_not_touch_it(
     assert at_home_state(hass, entry) == STATE_ON
     await send(message("live"))
     await send(message("test"))
-    await send(resend(trip("2026-10-13T08:00:00Z", ended_at_home=False)))
+    assert at_home_state(hass, entry) == STATE_ON
+
+
+async def test_a_resend_that_becomes_the_last_trip_brings_its_value(
+    hass: HomeAssistant, entry, send
+) -> None:
+    await send(end(True))
+    # Home Assistant was off at the real end of a more recent trip.
+    newer = trip("2026-10-13T08:00:00Z", ended_at_home=False)
+    assert await send(resend(newer)) == 200
+    assert at_home_state(hass, entry) == STATE_OFF
+    # The same trip sent again counts too (>=), null included.
+    await send(resend(trip("2026-10-13T08:00:00Z", ended_at_home=None)))
+    assert at_home_state(hass, entry) == STATE_UNKNOWN
+
+
+async def test_an_older_resend_does_not_touch_it(
+    hass: HomeAssistant, entry, send
+) -> None:
+    await send(end(True))
+    older = trip("2026-10-11T08:00:00Z", ended_at_home=False)
+    assert await send(resend(older)) == 200
+    assert at_home_state(hass, entry) == STATE_ON
+
+
+async def test_a_resend_can_create_it(hass: HomeAssistant, entry, send) -> None:
+    assert await send(resend(trip("2026-10-13T08:00:00Z", ended_at_home=True))) == 200
     assert at_home_state(hass, entry) == STATE_ON
 
 

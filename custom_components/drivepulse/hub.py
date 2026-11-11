@@ -372,15 +372,18 @@ class DrivePulseHub:
 
     @callback
     def _at_home(self, vehicle: Vehicle, trip: dict[str, Any]) -> None:
-        """trip_end only: where the trip ended, as the phone worked it out.
+        """Where the last trip ended, as the phone worked it out.
+
+        It belongs to the last trip, so it changes when the last trip does:
+        at trip_end, and with a trip_resend that becomes the last trip.
 
         True or False sets it, and the first one creates the entity. None
         (switch off in the app, no Home place for this car, GPS lost before
         the car stopped) makes it unknown. No key at all (an app from before
-        the switch) leaves it as it was. trip_start, trip_resend and test
-        never come here: a trip that starts and is then thrown away by the
-        app sends no trip_end, so turning the sensor off at trip_start would
-        leave it off with the car in the garage.
+        the switch) leaves it as it was. trip_start, live and test never come
+        here: a trip that starts and is then thrown away by the app sends no
+        trip_end, so turning the sensor off at trip_start would leave it off
+        with the car in the garage.
         """
         if "ended_at_home" not in trip:
             return
@@ -417,8 +420,10 @@ class DrivePulseHub:
         Not through _apply: every reading at the top of this message is null,
         so it would blank the sensors and turn "adapter connected" off, and it
         must not end a trip in progress either. Only the last trip can change,
-        and only to the same trip or a more recent one; the bus gets
-        drivepulse_trip_resent, never drivepulse_trip_end.
+        and only to the same trip or a more recent one; Parked at home changes
+        with it, since it belongs to the last trip (Home Assistant was off at
+        the real end). The bus gets drivepulse_trip_resent, never
+        drivepulse_trip_end.
         """
         trip = payload.get("trip")
         if not isinstance(trip, dict):
@@ -429,6 +434,7 @@ class DrivePulseHub:
         summary = _trip_summary(trip)
         if _more_recent(summary, vehicle.last_trip):
             vehicle.last_trip = summary
+            self._at_home(vehicle, trip)
             self._async_save()
             async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
         sent_at = payload.get("sent_at")

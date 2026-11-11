@@ -38,9 +38,9 @@ These events are fired on the Home Assistant bus, so you can automate "the car l
 | `drivepulse_trip_end` | a trip ends | the same, plus `trip` (distance, duration, average and maximum speed, consumption) |
 | `drivepulse_trip_resent` | you send a saved trip again from the trip's page in the app | `vehicle`, `device_id`, `sent_at`, `trip` |
 
-A trip sent again is never a `drivepulse_trip_end`, so "the car arrived" automations do not run for an old trip. It becomes the **Last trip** only if it is the same trip (for example sent again after a correction) or a more recent one, and it changes no other entity.
+A trip sent again is never a `drivepulse_trip_end`, so "the car arrived" automations do not run for an old trip. It becomes the **Last trip** only if it is the same trip (for example sent again after a correction) or a more recent one, and then **Parked at home** changes with it; it changes no other entity.
 
-**Parked at home** changes only at the end of a trip. A trip from home to home leaves it on, so to act at every arrival home use the `drivepulse_trip_end` event with `trip.ended_at_home` set to `true`.
+**Parked at home** changes only with the **Last trip**: at the end of a trip, or with a trip sent again that becomes the last trip. A trip from home to home leaves it on, so to act at every arrival home use the `drivepulse_trip_end` event with `trip.ended_at_home` set to `true`.
 
 Only the numbers above are sent: **no GPS position, no VIN, no addresses**. The one thing about places is the yes or no of **Parked at home**: the phone works it out from the Home places saved for that car, and sends it only if you switch it on. Home Assistant already knows where your phone is.
 

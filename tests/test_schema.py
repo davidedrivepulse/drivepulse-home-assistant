@@ -11,7 +11,12 @@ import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
 from custom_components.drivepulse.const import KNOWN_MESSAGES
-from custom_components.drivepulse.hub import EVENT_FIELDS, NUMERIC_KEYS, TRIP_FIELDS
+from custom_components.drivepulse.hub import (
+    EVENT_FIELDS,
+    NUMERIC_KEYS,
+    TRIP_AT_HOME,
+    TRIP_FIELDS,
+)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SCHEMA = json.loads(
@@ -112,7 +117,7 @@ def test_every_key_the_integration_reads_is_in_the_schema() -> None:
     for key in [*NUMERIC_KEYS, *EVENT_FIELDS]:
         assert key in top, key
         assert key in SCHEMA["required"], key
-    assert set(top["trip"]["properties"]) == set(TRIP_FIELDS) | {"id"}
+    assert set(top["trip"]["properties"]) == set(TRIP_FIELDS) | {"id", TRIP_AT_HOME}
 
 
 def test_no_position_no_address_no_vin() -> None:

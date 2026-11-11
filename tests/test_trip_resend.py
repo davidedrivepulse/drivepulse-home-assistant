@@ -124,9 +124,9 @@ async def test_an_older_trip_does_not_replace_the_last_trip(
     # the event still goes out: an automation can log the old trip
     assert events[-1].data["trip"]["distance_km"] == 8.25
 
-    # the same trip again changes nothing either
-    await send(resend(trip("2026-10-10T07:12:00Z", distance_km=99.0)))
-    assert state(hass, entry, "sensor", "last_trip_distance").state == "20.0"
+    # the same trip sent again after a correction brings the corrected value
+    await send(resend(trip("2026-10-10T07:12:00Z", distance_km=20.5)))
+    assert state(hass, entry, "sensor", "last_trip_distance").state == "20.5"
 
     await send(resend(trip("2026-10-11T07:12:00Z", distance_km=31.5)))
     assert state(hass, entry, "sensor", "last_trip_distance").state == "31.5"

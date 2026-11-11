@@ -122,14 +122,18 @@ def _trip_time(trip: dict[str, Any] | None) -> datetime | None:
 
 
 def _more_recent(trip: dict[str, Any], last: dict[str, Any] | None) -> bool:
-    """Whether a resent trip should become the last trip."""
+    """Whether a resent trip should become the last trip.
+
+    The same trip counts too (>=): sent again after a correction in the app,
+    it brings the corrected values. An older trip never does.
+    """
     if not last:
         return True
     new = _trip_time(trip)
     if new is None:
         return False
     old = _trip_time(last)
-    return old is None or new > old
+    return old is None or new >= old
 
 
 @dataclass
@@ -413,8 +417,8 @@ class DrivePulseHub:
         Not through _apply: every reading at the top of this message is null,
         so it would blank the sensors and turn "adapter connected" off, and it
         must not end a trip in progress either. Only the last trip can change,
-        and only to a more recent one; the bus gets drivepulse_trip_resent,
-        never drivepulse_trip_end.
+        and only to the same trip or a more recent one; the bus gets
+        drivepulse_trip_resent, never drivepulse_trip_end.
         """
         trip = payload.get("trip")
         if not isinstance(trip, dict):

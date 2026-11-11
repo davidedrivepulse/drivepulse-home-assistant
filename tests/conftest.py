@@ -12,6 +12,19 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+# Home Assistant's aiohttp_client, re-exported from a conftest so it always
+# wins. Two pytest plugins define this fixture: this one, whose copy keeps
+# the web router unfrozen so a component set up after the first test client
+# can still add its views, and pytest-aiohttp, which it installs. Between two
+# plugins the one registered last wins, and that order follows how the disk
+# lists site-packages: on GitHub it flipped on 11/11/2026 and five tests went
+# red with "Cannot register a resource into frozen router". A conftest
+# fixture beats any plugin; Home Assistant core keeps this fixture in its
+# tests/conftest.py for the same reason.
+from pytest_homeassistant_custom_component.plugins import (  # noqa: F401
+    aiohttp_client,
+)
+
 from custom_components.drivepulse.const import DOMAIN
 
 WEBHOOK_ID = "drivepulse_test_webhook"

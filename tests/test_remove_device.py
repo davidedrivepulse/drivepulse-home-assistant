@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.setup import async_setup_component
@@ -33,12 +34,24 @@ def device_of(hass: HomeAssistant, entry, slug: str) -> dr.DeviceEntry | None:
     )
 
 
+@pytest.fixture(autouse=True)
+async def config_ready(hass: HomeAssistant) -> None:
+    """The websocket command that deletes a device lives in "config".
+
+    Home Assistant loads it at boot, before its web server starts. Here too:
+    before the first test client, because a client starts the server and
+    "config" adds web views. Loaded after it, the views go on a router that
+    may already be frozen ("Cannot register a resource into frozen router"):
+    whether it is depends on which of two pytest plugins hands out
+    aiohttp_client, and that changed on GitHub on 11/11/2026.
+    """
+    assert await async_setup_component(hass, "config", {})
+
+
 async def remove(
     hass: HomeAssistant, hass_ws_client: Any, entry, device_id: str
 ) -> dict:
     """What the frontend does when the user presses Delete on a device."""
-    # the websocket command lives in the "config" component
-    assert await async_setup_component(hass, "config", {})
     client = await hass_ws_client(hass)
     # The alias with config_entry_id: it exists on every Home Assistant this
     # integration supports (2024.12 on), the newer config/device_registry/remove

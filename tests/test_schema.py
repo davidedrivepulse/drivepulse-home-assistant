@@ -129,6 +129,33 @@ def test_no_position_no_address_no_vin() -> None:
     assert not [k for k in found if words & set(k.lower().split("_"))]
 
 
+def test_the_schema_has_exactly_the_keys_the_app_sends() -> None:
+    # The schema is open (a newer app can add keys, and a receiver keeps an
+    # old copy of this file), so a key added to the app without the schema,
+    # or a position, an address or the VIN, is caught here: the keys of the
+    # messages the app really builds must be the schema's, at the top, in
+    # `extended` and in `trip`.
+    top: set[str] = set()
+    extended: set[str] = set()
+    trip: set[str] = set()
+    for message in APP_MESSAGES.values():
+        top |= set(message)
+        extended |= set(message.get("extended") or {})
+        trip |= set(message.get("trip") or {})
+    properties = SCHEMA["properties"]
+    assert top == set(properties)
+    assert extended == set(properties["extended"]["properties"])
+    assert trip == set(properties["trip"]["properties"])
+
+
+def test_a_newer_app_with_more_keys_is_still_valid() -> None:
+    newer = copy.deepcopy(TRIP_END)
+    newer["new_top_key"] = 1
+    newer["extended"]["new_reading"] = 2.0
+    newer["trip"]["new_trip_key"] = 3
+    assert _errors(newer) == []
+
+
 @pytest.mark.parametrize("name", sorted(APP_MESSAGES))
 def test_the_messages_the_app_builds_are_valid(name: str) -> None:
     assert _errors(APP_MESSAGES[name]) == []
@@ -158,16 +185,12 @@ def _trip(**changes: object) -> dict:
 @pytest.mark.parametrize(
     ("name", "message"),
     [
-        ("a position at the top", {**LIVE, "lat": 43.0}),
-        ("a VIN at the top", {**LIVE, "vin": "X"}),
         ("a trip on a live message", {**LIVE, "trip": TRIP}),
         ("trip_end without a trip", {k: v for k, v in TRIP_END.items() if k != "trip"}),
         ("a missing key", {k: v for k, v in LIVE.items() if k != "obd_at"}),
         ("schema 2", {**LIVE, "schema": 2}),
-        ("an unknown extended reading", {**LIVE, "extended": {"latitude": 1}}),
         ("a null extended reading", {**LIVE, "extended": {"oil_temp_c": None}}),
         ("a custom key not cp<id>", {**LIVE, "custom": {"oil": LIVE["custom"]["cp3"]}}),
-        ("an address in the trip", _trip(start_address="x")),
         ("both consumptions", _trip(avg_consumption_kwh_100km=1.0)),
         ("sent_at not a time", {**LIVE, "sent_at": "yesterday"}),
         ("rpm as text", {**LIVE, "rpm": "2100"}),

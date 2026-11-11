@@ -98,6 +98,10 @@ async def test_an_older_resend_does_not_touch_it(
     older = trip("2026-10-11T08:00:00Z", ended_at_home=False)
     assert await send(resend(older)) == 200
     assert at_home_state(hass, entry) == STATE_ON
+    # Not even inside: the entity is redrawn only on the next update, so a
+    # value changed without a signal would show up with the next live.
+    assert await send(message("live")) == 200
+    assert at_home_state(hass, entry) == STATE_ON
 
 
 async def test_a_resend_can_create_it(hass: HomeAssistant, entry, send) -> None:

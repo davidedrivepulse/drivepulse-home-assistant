@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/davideguida0093/drivepulse-home-assistant/main/schema/drivepulse-schema-1.json",
+  "title": "DrivePulse webhook message, schema 1",
+  "description": "The JSON body the DrivePulse app POSTs to a webhook (Home Assistant or any other receiver). Every key below is always present, with null when the car did not give that value, except `custom` (sent from app 3.5.9) and `trip` (only with `trip_end`). Units are always metric. The message never carries a GPS position, an address or the VIN.",
+  "type": "object",
+  "properties": {
+    "source": {
+      "description": "Who sent the message.",
+      "const": "drivepulse"
+    },
+    "schema": {
+      "description": "The format version. A message with a different number follows a different schema.",
+      "const": 1
+    },
+    "event": {
+      "description": "live: periodic while the adapter is connected (only if live sending is on). trip_start: a trip started. trip_end: a trip ended and was saved; carries `trip`. test: the test button in the app.",
+      "enum": ["live", "trip_start", "trip_end", "test"]
+    },
+    "sent_at": {
+      "description": "When the app built the message, UTC (for example 2026-10-10T08:00:00.000Z).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "units": {
+      "description": "Always metric, whatever units the app shows.",
+      "const": "metric"
+    },
+    "vehicle": {
+      "description": "The vehicle's name as written in the app. Not the VIN.",
+      "type": ["string", "null"]
+    },
+    "obd_connected": {
+      "description": "Whether the app was talking to the car when it built the message. False with the test button away from the car, and at trip_end when the engine is already off.",
+      "type": "boolean"
+    },
+    "obd_at": {
+      "description": "UTC time of the OBD reading the values come from (at trip_end with the adapter gone: the last reading of the trip). Null when there is none.",
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "rpm": {
+      "description": "Engine speed, revolutions per minute.",
+      "type": ["integer", "null"]
+    },
+    "speed_kmh": {
+      "description": "Vehicle speed from the car, km/h.",
+      "type": ["integer", "null"]
+    },
+    "coolant_temp_c": {
+      "description": "Engine coolant temperature, °C. At trip_end, the last value read in the trip.",
+      "type": ["integer", "null"]
+    },
+    "battery_voltage": {
+      "description": "12 V battery voltage, V, two decimals. At trip_end, the last value read in the trip.",
+      "type": ["number", "null"]
+    },
+    "fuel_level_pct": {
+      "description": "Fuel tank level, %, one decimal. At trip_end, the last value read in the trip.",
+      "type": ["number", "null"]
+    },
+    "throttle_pct": {
+      "description": "Throttle position, %, one decimal.",
+      "type": ["number", "null"]
+    },
+    "consumption_l_100km": {
+      "description": "Instantaneous fuel consumption, l/100 km, one decimal.",
+      "type": ["number", "null"]
+    },
+    "trip_km": {
+      "description": "Distance of the current trip, km, two decimals (0 at trip_start; the trip's distance at trip_end).",
+      "type": ["number", "null"]
+    },
+    "dtc_count": {
+      "description": "Number of stored trouble codes.",
+      "type": ["integer", "null"]
+    },
+    "fuel_level_l": {
+      "description": "Fuel in the tank, litres, one decimal, when the car gives it. At trip_end, the last value read in the trip.",
+      "type": ["number", "null"]
+    },
+    "range_km": {
+      "description": "Range shown by the car, km, one decimal, when the car gives it. At trip_end, the last value read in the trip.",
+      "type": ["number", "null"]
+    },
+    "hv_soc_pct": {
+      "description": "Charge of the high-voltage battery of an electric or hybrid car, %, one decimal. At trip_end, the last value read in the trip.",
+      "type": ["number", "null"]
+    },
+    "odometer_km": {
+      "description": "Odometer, km, one decimal, when the car gives it. At trip_end, the last value read in the trip, or the trip's end odometer.",
+      "type": ["number", "null"]
+    },
+    "dtc": {
+      "description": "The stored trouble codes (for example P0420). Null when the app has not read them.",
+      "type": ["array", "null"],
+      "items": { "type": "string" }
+    },
+    "extended": {
+      "description": "Extended readings, only the ones the car actually sent in this message (no null values). Can be empty.",
+      "type": "object",
+      "properties": {
+        "engine_load_pct": { "description": "Calculated engine load, %.", "type": "integer" },
+        "intake_temp_c": { "description": "Intake air temperature, °C.", "type": "integer" },
+        "ambient_temp_c": { "description": "Outside air temperature, °C.", "type": "integer" },
+        "oil_temp_c": { "description": "Engine oil temperature, °C.", "type": "integer" },
+        "pedal_pct": { "description": "Accelerator pedal position, %, one decimal.", "type": "number" },
+        "map_kpa": { "description": "Intake manifold absolute pressure, kPa.", "type": "integer" },
+        "maf_gs": { "description": "Mass air flow, g/s, one decimal.", "type": "number" },
+        "fuel_rate_lh": { "description": "Fuel rate, l/h, two decimals.", "type": "number" },
+        "timing_advance_deg": { "description": "Ignition timing advance, degrees, one decimal.", "type": "number" },
+        "short_fuel_trim_pct": { "description": "Short-term fuel trim, bank 1, %.", "type": "integer" },
+        "long_fuel_trim_pct": { "description": "Long-term fuel trim, bank 1, %.", "type": "integer" },
+        "baro_kpa": { "description": "Barometric pressure, kPa.", "type": "integer" },
+        "engine_run_time_s": { "description": "Time since engine start, s.", "type": "integer" },
+        "fuel_rail_kpa": { "description": "Fuel rail pressure, kPa.", "type": "integer" },
+        "distance_with_mil_km": { "description": "Distance driven with the engine warning light on, km.", "type": "integer" },
+        "distance_since_clear_km": { "description": "Distance since the trouble codes were last cleared, km.", "type": "integer" },
+        "torque_nm": { "description": "Engine torque, N·m, one decimal.", "type": "number" },
+        "power_kw": { "description": "Engine power, kW, one decimal.", "type": "number" },
+        "catalyst_temp_c": { "description": "Catalyst temperature, bank 1 sensor 1, °C.", "type": "integer" },
+        "egt_c": { "description": "Exhaust gas temperature, bank 1, °C.", "type": "integer" },
+        "dpf_temp_c": { "description": "Particulate filter temperature, °C.", "type": "integer" },
+        "dpf_delta_kpa": { "description": "Particulate filter differential pressure, kPa, two decimals.", "type": "number" },
+        "dpf_soot_calc_g": { "description": "Particulate filter soot mass, calculated, g, one decimal.", "type": "number" },
+        "dpf_soot_meas_g": { "description": "Particulate filter soot mass, measured, g, one decimal.", "type": "number" },
+        "dpf_load_pct": { "description": "Particulate filter load, %, one decimal.", "type": "number" },
+        "dpf_regen_active": { "description": "Whether the particulate filter is regenerating now.", "type": "boolean" },
+        "dpf_km_since_regen": { "description": "Distance since the last particulate filter regeneration, km, one decimal.", "type": "number" },
+        "adblue_level_pct": { "description": "AdBlue (DEF) tank level, %, one decimal.", "type": "number" },
+        "gearbox_temp_c": { "description": "Gearbox oil temperature, °C, one decimal.", "type": "number" },
+        "hv_soc_pct": { "description": "High-voltage battery charge, %, one decimal.", "type": "number" },
+        "hv_soh_pct": { "description": "High-voltage battery state of health, %, one decimal.", "type": "number" },
+        "hv_battery_temp_c": { "description": "High-voltage battery temperature, °C, one decimal.", "type": "number" },
+        "odometer_km": { "description": "Odometer, km, one decimal.", "type": "number" },
+        "fuel_level_l": { "description": "Fuel in the tank, litres, one decimal.", "type": "number" },
+        "range_km": { "description": "Range shown by the car, km, one decimal.", "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "custom": {
+      "description": "Custom PIDs the user turned on in the app that have a value, under their own key `cp<id>`, which does not change when the PID is renamed. Can be empty. Sent from app 3.5.9.",
+      "type": "object",
+      "propertyNames": { "pattern": "^cp[0-9]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": { "description": "The name the user gave the PID.", "type": "string" },
+          "value": { "description": "The value, rounded to the PID's decimals (an integer with zero decimals).", "type": "number" },
+          "unit": { "description": "The unit the user gave the PID.", "type": "string" },
+          "at": { "description": "UTC time of the reading.", "type": "string", "format": "date-time" }
+        },
+        "required": ["name", "value", "unit", "at"],
+        "additionalProperties": false
+      }
+    },
+    "trip": {
+      "description": "The trip summary, only with trip_end. No start or end place, no route.",
+      "type": "object",
+      "properties": {
+        "id": { "description": "The trip's number in the app.", "type": ["integer", "null"] },
+        "start": { "description": "Start time, UTC.", "type": "string", "format": "date-time" },
+        "end": { "description": "End time, UTC.", "type": ["string", "null"], "format": "date-time" },
+        "distance_km": { "description": "Distance, km, two decimals.", "type": ["number", "null"] },
+        "duration_min": { "description": "Duration, minutes, one decimal.", "type": ["number", "null"] },
+        "avg_speed_kmh": { "description": "Average speed, km/h, one decimal.", "type": ["number", "null"] },
+        "max_speed_kmh": { "description": "Maximum speed, km/h, one decimal.", "type": ["number", "null"] },
+        "avg_consumption_l_100km": { "description": "Average consumption, l/100 km, one decimal. Not on an electric car.", "type": ["number", "null"] },
+        "avg_consumption_kwh_100km": { "description": "Average consumption, kWh/100 km, one decimal. Only on an electric car.", "type": ["number", "null"] },
+        "odometer_km": { "description": "Odometer at the end of the trip, km, one decimal.", "type": ["number", "null"] }
+      },
+      "required": ["id", "start", "end", "distance_km", "duration_min", "avg_speed_kmh", "max_speed_kmh", "odometer_km"],
+      "oneOf": [
+        { "required": ["avg_consumption_l_100km"] },
+        { "required": ["avg_consumption_kwh_100km"] }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "source", "schema", "event", "sent_at", "units", "vehicle", "obd_connected", "obd_at",
+    "rpm", "speed_kmh", "coolant_temp_c", "battery_voltage", "fuel_level_pct", "throttle_pct",
+    "consumption_l_100km", "trip_km", "dtc_count", "fuel_level_l", "range_km", "hv_soc_pct",
+    "odometer_km", "dtc", "extended"
+  ],
+  "if": {
+    "properties": { "event": { "const": "trip_end" } },
+    "required": ["event"]
+  },
+  "then": { "required": ["trip"] },
+  "else": { "not": { "required": ["trip"] } },
+  "additionalProperties": false
+}

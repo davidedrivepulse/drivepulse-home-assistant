@@ -179,6 +179,13 @@ def test_electric_trip_end_and_an_app_without_custom_are_valid() -> None:
     assert _errors(TRIP_RESEND) == []
 
 
+def test_ended_at_home_is_a_yes_a_no_or_null_and_may_be_missing() -> None:
+    # Missing: an app from before 3.6.2 (TRIP has no such key).
+    assert "ended_at_home" not in TRIP
+    for value in (True, False, None):
+        assert _errors(_trip(ended_at_home=value)) == [], value
+
+
 def _trip(**changes: object) -> dict:
     message = copy.deepcopy(TRIP_END)
     message["trip"].update(changes)
@@ -202,6 +209,7 @@ def _trip(**changes: object) -> dict:
         ("both consumptions", _trip(avg_consumption_kwh_100km=1.0)),
         ("sent_at not a time", {**LIVE, "sent_at": "yesterday"}),
         ("rpm as text", {**LIVE, "rpm": "2100"}),
+        ("ended_at_home as text", _trip(ended_at_home="yes")),
     ],
 )
 def test_what_the_app_never_sends_is_rejected(name: str, message: dict) -> None:

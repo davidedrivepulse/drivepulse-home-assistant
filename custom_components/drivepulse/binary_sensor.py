@@ -24,6 +24,13 @@ ADAPTER_CONNECTED = BinarySensorEntityDescription(
     translation_key="adapter_connected",
     device_class=BinarySensorDeviceClass.CONNECTIVITY,
 )
+# Where the last trip ended: in a Home place saved for this car in the app.
+# A yes/no worked out on the phone; the app never sends the position.
+PARKED_AT_HOME = BinarySensorEntityDescription(
+    key="parked_at_home",
+    translation_key="parked_at_home",
+    device_class=BinarySensorDeviceClass.PRESENCE,
+)
 
 
 async def async_setup_entry(
@@ -48,10 +55,22 @@ async def async_setup_entry(
     hub.listen_new_vehicle(
         lambda vehicle: async_add_entities(vehicle_entities(vehicle))
     )
+    # "Parked at home" appears with the first yes or no from the app (the
+    # switch is off by default there), and after a restart if it ever had one.
+    async_add_entities(
+        DrivePulseBinarySensor(hub, vehicle, PARKED_AT_HOME)
+        for vehicle in hub.vehicles.values()
+        if vehicle.at_home_known
+    )
+    hub.listen_at_home_known(
+        lambda vehicle: async_add_entities(
+            [DrivePulseBinarySensor(hub, vehicle, PARKED_AT_HOME)]
+        )
+    )
 
 
 class DrivePulseBinarySensor(DrivePulseEntity, BinarySensorEntity):
-    """Trip in progress / adapter connected."""
+    """Trip in progress / adapter connected / parked at home."""
 
     def __init__(
         self,
@@ -66,8 +85,15 @@ class DrivePulseBinarySensor(DrivePulseEntity, BinarySensorEntity):
     def is_on(self) -> bool | None:
         if self._key == "trip_in_progress":
             return self._vehicle.in_trip
+        if self._key == "parked_at_home":
+            return self._vehicle.at_home
         return self._vehicle.adapter_connected
 
     @property
     def available(self) -> bool:
-        return self._key == "trip_in_progress" or self.is_on is not None
+        # Parked at home: unknown (None) is a state of its own, not "the
+        # integration lost the car".
+        return (
+            self._key in ("trip_in_progress", "parked_at_home")
+            or self.is_on is not None
+        )

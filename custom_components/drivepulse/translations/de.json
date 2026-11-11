@@ -65,6 +65,9 @@
       },
       "adapter_connected": {
         "name": "Adapter verbunden"
+      },
+      "parked_at_home": {
+        "name": "Zu Hause geparkt"
       }
     }
   }

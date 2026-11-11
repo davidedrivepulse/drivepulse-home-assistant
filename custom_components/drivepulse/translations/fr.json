@@ -65,6 +65,9 @@
       },
       "adapter_connected": {
         "name": "Adaptateur connecté"
+      },
+      "parked_at_home": {
+        "name": "Garée à la maison"
       }
     }
   }

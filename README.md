@@ -23,6 +23,7 @@ For each vehicle (named as in the app) one device, **without the VIN** (the app 
 | Last trip | Distance of the last trip. Duration, average and maximum speed, consumption are attributes |
 | Trip in progress | On from the start of a trip to its end |
 | Adapter connected | Whether the app is talking to the car right now |
+| Parked at home | Whether the last trip ended inside a Home place saved for this car in the app. It appears after the first trip with **Car at home at trip end** switched on in the app (off by default). **Unknown** when the app cannot say: no Home place for this car, or GPS lost before the car stopped. During a trip it keeps the last value: **Trip in progress** tells you the car is moving |
 | Fuel (litres), Speed, Engine speed | Appear when the car reports them; speed and engine speed are disabled by default (turn them on if you want them) |
 
 When the car does not give a value, the entity shows **Unavailable** instead of a wrong number. The odometer, the range and the trouble codes keep their last known value between messages, because the app only sends them at the end of a trip.
@@ -39,7 +40,9 @@ These events are fired on the Home Assistant bus, so you can automate "the car l
 
 A trip sent again is never a `drivepulse_trip_end`, so "the car arrived" automations do not run for an old trip. It becomes the **Last trip** only if it is more recent than the one Home Assistant has, and it changes no other entity.
 
-Only the numbers above are sent: **no GPS position, no VIN, no addresses**. Home Assistant already knows where your phone is.
+**Parked at home** changes only at the end of a trip. A trip from home to home leaves it on, so to act at every arrival home use the `drivepulse_trip_end` event with `trip.ended_at_home` set to `true`.
+
+Only the numbers above are sent: **no GPS position, no VIN, no addresses**. The one thing about places is the yes or no of **Parked at home**: the phone works it out from the Home places saved for that car, and sends it only if you switch it on. Home Assistant already knows where your phone is.
 
 ## Automation examples
 

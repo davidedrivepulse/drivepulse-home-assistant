@@ -144,6 +144,12 @@ class Vehicle:
     in_trip: bool = False
     adapter_connected: bool | None = None
     last_trip: dict[str, Any] | None = None
+    # Where the last trip ended: in a Home place of this car (True), not
+    # (False), or unknown (None). A yes/no worked out on the phone, never a
+    # position. at_home_known turns True with the first yes or no and never
+    # back: the entity exists from then on.
+    at_home: bool | None = None
+    at_home_known: bool = False
 
     def as_dict(self) -> dict[str, Any]:
         """The part worth keeping across a restart: the sticky values only."""
@@ -154,6 +160,8 @@ class Vehicle:
             "codes": self.codes,
             "in_trip": self.in_trip,
             "last_trip": self.last_trip,
+            "at_home": self.at_home,
+            "at_home_known": self.at_home_known,
         }
 
     @classmethod
@@ -167,6 +175,10 @@ class Vehicle:
             codes=data.get("codes"),
             in_trip=bool(data.get("in_trip", False)),
             last_trip=data.get("last_trip"),
+            at_home=(
+                data["at_home"] if isinstance(data.get("at_home"), bool) else None
+            ),
+            at_home_known=bool(data.get("at_home_known", False)),
         )
 
 
@@ -192,6 +204,7 @@ class DrivePulseHub:
         )
         self._new_vehicle_listeners: list[Callable[[Vehicle], None]] = []
         self._new_key_listeners: list[Callable[[Vehicle, str], None]] = []
+        self._at_home_listeners: list[Callable[[Vehicle], None]] = []
 
     async def async_load(self) -> None:
         data = await self._store.async_load()
@@ -248,6 +261,10 @@ class DrivePulseHub:
     @callback
     def listen_new_key(self, listener: Callable[[Vehicle, str], None]) -> None:
         self._new_key_listeners.append(listener)
+
+    @callback
+    def listen_at_home_known(self, listener: Callable[[Vehicle], None]) -> None:
+        self._at_home_listeners.append(listener)
 
     # -- the webhook --------------------------------------------------------
 
@@ -342,11 +359,36 @@ class DrivePulseHub:
             trip = payload.get("trip")
             if isinstance(trip, dict):
                 vehicle.last_trip = _trip_summary(trip)
+                self._at_home(vehicle, trip)
         if event in (MSG_TRIP_START, MSG_TRIP_END):
             self._fire_trip_event(vehicle, event, payload)
 
         self._async_save()
         async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
+
+    @callback
+    def _at_home(self, vehicle: Vehicle, trip: dict[str, Any]) -> None:
+        """trip_end only: where the trip ended, as the phone worked it out.
+
+        True or False sets it, and the first one creates the entity. None
+        (switch off in the app, no Home place for this car, GPS lost before
+        the car stopped) makes it unknown. No key at all (an app from before
+        the switch) leaves it as it was. trip_start, trip_resend and test
+        never come here: a trip that starts and is then thrown away by the
+        app sends no trip_end, so turning the sensor off at trip_start would
+        leave it off with the car in the garage.
+        """
+        if "ended_at_home" not in trip:
+            return
+        value = trip["ended_at_home"]
+        if not isinstance(value, bool):
+            vehicle.at_home = None
+            return
+        vehicle.at_home = value
+        if not vehicle.at_home_known:
+            vehicle.at_home_known = True
+            for listener in self._at_home_listeners:
+                listener(vehicle)
 
     @callback
     def _test(self, payload: dict[str, Any]) -> web.Response | None:

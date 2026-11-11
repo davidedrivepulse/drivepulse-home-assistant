@@ -154,7 +154,7 @@
       }
     },
     "trip": {
-      "description": "The trip summary, only with trip_end and trip_resend. No start or end place, no route. A newer app can add keys.",
+      "description": "The trip summary, only with trip_end and trip_resend. No start or end place, no route: about places there is only the yes or no of ended_at_home. A newer app can add keys.",
       "type": "object",
       "properties": {
         "id": { "description": "The trip's number in the app.", "type": ["integer", "null"] },
@@ -166,7 +166,8 @@
         "max_speed_kmh": { "description": "Maximum speed, km/h, one decimal.", "type": ["number", "null"] },
         "avg_consumption_l_100km": { "description": "Average consumption, l/100 km, one decimal. Not on an electric car.", "type": ["number", "null"] },
         "avg_consumption_kwh_100km": { "description": "Average consumption, kWh/100 km, one decimal. Only on an electric car.", "type": ["number", "null"] },
-        "odometer_km": { "description": "Odometer at the end of the trip, km, one decimal.", "type": ["number", "null"] }
+        "odometer_km": { "description": "Odometer at the end of the trip, km, one decimal.", "type": ["number", "null"] },
+        "ended_at_home": { "description": "Did the trip end inside a Home place saved for this car in the app? A yes or no worked out on the phone, never a position, place name or address. null when the switch in the app is off (the default), when this car has no Home place (one saved on another car does not count), or when GPS was lost before the car stopped. Always null with trip_resend. Missing from apps before 3.6.2.", "type": ["boolean", "null"] }
       },
       "required": ["id", "start", "end", "distance_km", "duration_min", "avg_speed_kmh", "max_speed_kmh", "odometer_km"],
       "oneOf": [

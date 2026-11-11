@@ -20,6 +20,9 @@ MSG_TRIP_RESEND = "trip_resend"
 # The trip that had just started was a false start (fewer than 5 GPS points)
 # and the app dropped it: it closes the trip_start already sent.
 MSG_TRIP_DISCARDED = "trip_discarded"
+# A real trip left open when the phone stopped the app, closed by the app
+# when it opened again, maybe hours later: never a trip_end.
+MSG_TRIP_RECOVERED = "trip_recovered"
 MSG_LIVE = "live"
 MSG_TEST = "test"
 KNOWN_MESSAGES = {
@@ -27,6 +30,7 @@ KNOWN_MESSAGES = {
     MSG_TRIP_END,
     MSG_TRIP_RESEND,
     MSG_TRIP_DISCARDED,
+    MSG_TRIP_RECOVERED,
     MSG_LIVE,
     MSG_TEST,
 }

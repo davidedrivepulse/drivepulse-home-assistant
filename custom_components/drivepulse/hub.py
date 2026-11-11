@@ -29,6 +29,7 @@ from .const import (
     MSG_TEST,
     MSG_TRIP_DISCARDED,
     MSG_TRIP_END,
+    MSG_TRIP_RECOVERED,
     MSG_TRIP_RESEND,
     MSG_TRIP_START,
 )
@@ -303,6 +304,8 @@ class DrivePulseHub:
             return self._resend(payload)
         if event == MSG_TRIP_DISCARDED:
             return self._discarded(payload)
+        if event == MSG_TRIP_RECOVERED:
+            return self._recovered(payload)
 
         vehicle = self._vehicle_for(payload)
         if vehicle is None:
@@ -383,7 +386,8 @@ class DrivePulseHub:
         """Where the last trip ended, as the phone worked it out.
 
         It belongs to the last trip, so it changes when the last trip does:
-        at trip_end, and with a trip_resend that becomes the last trip.
+        at trip_end, and with a trip_resend or a trip_recovered that becomes
+        the last trip.
 
         True or False sets it, and the first one creates the entity. None
         (switch off in the app, no Home place for this car, GPS lost before
@@ -435,6 +439,33 @@ class DrivePulseHub:
         if vehicle is None or not vehicle.in_trip:
             return None
         vehicle.in_trip = False
+        self._async_save()
+        async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
+        return None
+
+    @callback
+    def _recovered(self, payload: dict[str, Any]) -> web.Response | None:
+        """A real trip left open when the phone stopped the app, closed later.
+
+        The app closed it with its real end time when it opened again, maybe
+        hours later. It ends the trip in progress and becomes the last trip
+        with the rule of a resend (the same trip or a more recent one); Parked
+        at home changes only then, so an older trip never moves it back in
+        time. Not through _apply (every reading at the top is null) and no
+        event on the bus: a drivepulse_trip_end now would run "the car
+        arrived" automations at the wrong hour.
+        """
+        trip = payload.get("trip")
+        if not isinstance(trip, dict):
+            return web.Response(status=400, text="trip_recovered without a trip")
+        vehicle = self._vehicle_for(payload)
+        if vehicle is None:
+            return web.Response(status=400, text="too many vehicles")
+        vehicle.in_trip = False
+        summary = _trip_summary(trip)
+        if _more_recent(summary, vehicle.last_trip):
+            vehicle.last_trip = summary
+            self._at_home(vehicle, trip)
         self._async_save()
         async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
         return None

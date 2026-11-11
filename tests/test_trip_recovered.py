@@ -121,6 +121,28 @@ async def test_parked_at_home_follows_only_a_trip_that_becomes_the_last(
     assert state(hass, entry, "binary_sensor", "parked_at_home").state == STATE_UNKNOWN
 
 
+async def test_an_older_one_changes_nothing_not_even_the_trip_in_progress(
+    hass: HomeAssistant, entry, send
+) -> None:
+    await send(end("2026-10-11T18:00:00Z", True))
+    await send(message("trip_start"))
+
+    late = recovered(trip("2026-10-10T07:40:00Z", ended_at_home=False))
+    assert await send(late) == 200
+
+    # the trip in progress now is another one: it stays on
+    assert state(hass, entry, "binary_sensor", "trip_in_progress").state == STATE_ON
+    assert state(hass, entry, "sensor", "last_trip_distance").state == "8.25"
+    assert state(hass, entry, "binary_sensor", "parked_at_home").state == STATE_ON
+
+    # the same trip as the last one counts (>=): all of it, together
+    same = recovered(trip("2026-10-11T18:00:00Z", ended_at_home=False))
+    assert await send(same) == 200
+    assert state(hass, entry, "binary_sensor", "trip_in_progress").state == STATE_OFF
+    assert state(hass, entry, "sensor", "last_trip_distance").state == "31.5"
+    assert state(hass, entry, "binary_sensor", "parked_at_home").state == STATE_OFF
+
+
 async def test_a_recovered_trip_without_a_trip_is_refused(
     hass: HomeAssistant, entry, send
 ) -> None:

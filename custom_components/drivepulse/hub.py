@@ -448,12 +448,14 @@ class DrivePulseHub:
         """A real trip left open when the phone stopped the app, closed later.
 
         The app closed it with its real end time when it opened again, maybe
-        hours later. It ends the trip in progress and becomes the last trip
-        with the rule of a resend (the same trip or a more recent one); Parked
-        at home changes only then, so an older trip never moves it back in
-        time. Not through _apply (every reading at the top is null) and no
-        event on the bus: a drivepulse_trip_end now would run "the car
-        arrived" automations at the wrong hour.
+        hours later. One rule: everything happens only if it becomes the last
+        trip, with the rule of a resend (the same trip or a more recent one).
+        Then it ends the trip in progress, becomes the last trip and brings
+        Parked at home. An older one changes nothing: a more recent trip
+        already ended the trip in progress back then, and a trip in progress
+        now is another one. Not through _apply (every reading at the top is
+        null) and no event on the bus: a drivepulse_trip_end now would run
+        "the car arrived" automations at the wrong hour.
         """
         trip = payload.get("trip")
         if not isinstance(trip, dict):
@@ -461,11 +463,12 @@ class DrivePulseHub:
         vehicle = self._vehicle_for(payload)
         if vehicle is None:
             return web.Response(status=400, text="too many vehicles")
-        vehicle.in_trip = False
         summary = _trip_summary(trip)
-        if _more_recent(summary, vehicle.last_trip):
-            vehicle.last_trip = summary
-            self._at_home(vehicle, trip)
+        if not _more_recent(summary, vehicle.last_trip):
+            return None
+        vehicle.in_trip = False
+        vehicle.last_trip = summary
+        self._at_home(vehicle, trip)
         self._async_save()
         async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
         return None

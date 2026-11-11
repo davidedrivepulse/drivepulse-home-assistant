@@ -15,3 +15,7 @@ jobs:
           python-version: "3.13"
       - run: pip install -r requirements_test.txt
       - run: pytest -q
+      # Again with pytest-aiohttp registered after Home Assistant's plugin, the
+      # order that froze the router on 11/11/2026: tests/conftest.py must keep
+      # Home Assistant's aiohttp_client whatever order the runner's disk gives.
+      - run: pytest -q -p no:homeassistant -p pytest_homeassistant_custom_component.plugins

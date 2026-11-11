@@ -259,6 +259,7 @@ The webhook id in the address is the secret: anyone who has it can send data to 
 - One device per vehicle **name**. If you rename a vehicle in the app, a new device appears; delete the old one in Home Assistant (**Settings > Devices & services > DrivePulse**, open the device, **Delete**): the integration forgets that vehicle, so it does not come back after a restart and no longer counts against the limit. A vehicle with a trip in progress cannot be deleted until the trip ends.
 - Up to 20 vehicles per webhook; anything beyond that is ignored.
 - Messages the integration does not know are accepted and ignored, so a newer app does not show errors.
+- The message format is in [schema/drivepulse-schema-1.json](schema/drivepulse-schema-1.json) (JSON Schema 2020-12), for anyone who wants to receive DrivePulse messages somewhere else. It lists every key the app sends today. A newer app can add keys: ignore the ones you do not know. None of them will ever be a position, an address or the VIN.
 - Needs Home Assistant 2024.12 or newer.
 
 ## Troubleshooting

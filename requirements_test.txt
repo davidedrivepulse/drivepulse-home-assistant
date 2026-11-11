@@ -1,1 +1,3 @@
 pytest-homeassistant-custom-component
+jsonschema
+rfc3339-validator

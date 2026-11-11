@@ -21,7 +21,7 @@ For each vehicle (named as in the app) one device, **without the VIN** (the app 
 | Coolant temperature | Engine coolant |
 | Trouble codes | Number of fault codes; the codes themselves (for example `P0420`) are in the `codes` attribute |
 | Last trip | Distance of the last trip. Duration, average and maximum speed, consumption are attributes |
-| Trip in progress | On from the start of a trip to its end |
+| Trip in progress | On from the start of a trip to its end. A false start that the app drops (fewer than 5 GPS points) turns it off again, without a `drivepulse_trip_end` |
 | Adapter connected | Whether the app is talking to the car right now |
 | Parked at home | Whether the last trip ended inside a Home place saved for this car in the app. It appears after the first trip with **Car at home at trip end** switched on in the app (off by default). **Unknown** when the app cannot say: no Home place for this car, or GPS lost before the car stopped. During a trip it keeps the last value: **Trip in progress** tells you the car is moving |
 | Fuel (litres), Speed, Engine speed | Appear when the car reports them; speed and engine speed are disabled by default (turn them on if you want them) |

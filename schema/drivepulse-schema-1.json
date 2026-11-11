@@ -14,8 +14,8 @@
       "const": 1
     },
     "event": {
-      "description": "live: periodic while the adapter is connected (only if live sending is on). trip_start: a trip started. trip_end: a trip ended and was saved; carries `trip`. trip_resend: the user sent a saved trip again by hand (from app 3.6.2); carries `trip`, every other value is null and `obd_connected` is false: it is not a reading of the car now, and not a trip that just ended. test: the test button in the app.",
-      "enum": ["live", "trip_start", "trip_end", "trip_resend", "test"]
+      "description": "live: periodic while the adapter is connected (only if live sending is on). trip_start: a trip started. trip_end: a trip ended and was saved; carries `trip`. trip_resend: the user sent a saved trip again by hand (from app 3.6.2); carries `trip`, every other value is null and `obd_connected` is false: it is not a reading of the car now, and not a trip that just ended. trip_discarded: the trip that had just started was a false start (fewer than 5 GPS points) and the app dropped it, so no trip_end will come (from app 3.6.2); no `trip`, the values are the last ones read, as at trip_end, with `trip_km` 0. test: the test button in the app.",
+      "enum": ["live", "trip_start", "trip_end", "trip_resend", "trip_discarded", "test"]
     },
     "sent_at": {
       "description": "When the app built the message, UTC (for example 2026-10-10T08:00:00.000Z).",

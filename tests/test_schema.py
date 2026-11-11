@@ -202,6 +202,7 @@ def _trip(**changes: object) -> dict:
             {k: v for k, v in TRIP_RESEND.items() if k != "trip"},
         ),
         ("a trip on a test message", {**TEST, "trip": TRIP}),
+        ("a trip on trip_discarded", {**TEST, "event": "trip_discarded", "trip": TRIP}),
         ("a missing key", {k: v for k, v in LIVE.items() if k != "obd_at"}),
         ("schema 2", {**LIVE, "schema": 2}),
         ("a null extended reading", {**LIVE, "extended": {"oil_temp_c": None}}),

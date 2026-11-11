@@ -17,9 +17,19 @@ EVENT_TRIP_RESENT = "drivepulse_trip_resent"
 MSG_TRIP_START = "trip_start"
 MSG_TRIP_END = "trip_end"
 MSG_TRIP_RESEND = "trip_resend"
+# The trip that had just started was a false start (fewer than 5 GPS points)
+# and the app dropped it: it closes the trip_start already sent.
+MSG_TRIP_DISCARDED = "trip_discarded"
 MSG_LIVE = "live"
 MSG_TEST = "test"
-KNOWN_MESSAGES = {MSG_TRIP_START, MSG_TRIP_END, MSG_TRIP_RESEND, MSG_LIVE, MSG_TEST}
+KNOWN_MESSAGES = {
+    MSG_TRIP_START,
+    MSG_TRIP_END,
+    MSG_TRIP_RESEND,
+    MSG_TRIP_DISCARDED,
+    MSG_LIVE,
+    MSG_TEST,
+}
 
 # More than this many vehicles on one webhook is not a garage, it is a forged
 # or broken sender: further names are ignored instead of creating devices.

@@ -27,6 +27,7 @@ from .const import (
     KNOWN_MESSAGES,
     MAX_VEHICLES,
     MSG_TEST,
+    MSG_TRIP_DISCARDED,
     MSG_TRIP_END,
     MSG_TRIP_RESEND,
     MSG_TRIP_START,
@@ -119,6 +120,12 @@ def _trip_time(trip: dict[str, Any] | None) -> datetime | None:
         if when is not None:
             return when if when.tzinfo else when.replace(tzinfo=dt_util.UTC)
     return None
+
+
+def _name_and_slug(payload: dict[str, Any]) -> tuple[str, str]:
+    """The vehicle's name in a message, and the slug it is stored under."""
+    name = _text(payload.get("vehicle")) or DEFAULT_VEHICLE_NAME
+    return name, slugify(name) or slugify(DEFAULT_VEHICLE_NAME)
 
 
 def _more_recent(trip: dict[str, Any], last: dict[str, Any] | None) -> bool:
@@ -294,6 +301,8 @@ class DrivePulseHub:
             return self._test(payload)
         if event == MSG_TRIP_RESEND:
             return self._resend(payload)
+        if event == MSG_TRIP_DISCARDED:
+            return self._discarded(payload)
 
         vehicle = self._vehicle_for(payload)
         if vehicle is None:
@@ -302,8 +311,7 @@ class DrivePulseHub:
         return None
 
     def _vehicle_for(self, payload: dict[str, Any]) -> Vehicle | None:
-        name = _text(payload.get("vehicle")) or DEFAULT_VEHICLE_NAME
-        slug = slugify(name) or slugify(DEFAULT_VEHICLE_NAME)
+        name, slug = _name_and_slug(payload)
         vehicle = self.vehicles.get(slug)
         if vehicle is not None:
             return vehicle
@@ -411,6 +419,24 @@ class DrivePulseHub:
             return web.Response(status=400, text="too many vehicles")
         if len(self.vehicles) != known:
             self._async_save()
+        return None
+
+    @callback
+    def _discarded(self, payload: dict[str, Any]) -> web.Response | None:
+        """The trip that had just started was a false start: the app dropped it.
+
+        Its trip_start already turned Trip in progress on, and no trip_end
+        will come. Only that goes back off: no value, no adapter flag, no last
+        trip, no Parked at home and no event on the bus (an automation can
+        follow Trip in progress). A vehicle this Home Assistant does not know
+        is not created for a trip that does not exist.
+        """
+        vehicle = self.vehicles.get(_name_and_slug(payload)[1])
+        if vehicle is None or not vehicle.in_trip:
+            return None
+        vehicle.in_trip = False
+        self._async_save()
+        async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
         return None
 
     @callback

@@ -101,6 +101,8 @@ actions:
         open DrivePulse to see what it means and whether you can drive.
 ```
 
+What a code means, whether you can keep driving and what to check before the garage: [fault codes explained](https://drivepulse.it/codici-errore_en), in 10 languages (for example [Italian](https://drivepulse.it/codici-errore) and [German](https://drivepulse.it/codici-errore_de)).
+
 ### Low 12 V battery
 
 Below 12 V for more than a minute, so the dip while cranking does not count. The OBD reading is usually 0.2-0.4 V lower than a multimeter's.

@@ -2,7 +2,7 @@
 
 Sensors and trip events from your car, sent by the DrivePulse app, with **no YAML to write**.
 
-[![Open your Home Assistant instance and show this repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=davideguida0093&repository=drivepulse-home-assistant&category=integration)
+[![Open your Home Assistant instance and show this repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=davidedrivepulse&repository=drivepulse-home-assistant&category=integration)
 
 DrivePulse reads your car through an OBD2 adapter. This integration gives the app a private address (a webhook) in your Home Assistant, and turns what the app sends into a device per vehicle with its sensors. The app sends data only to your Home Assistant, and only if you turn sending on: no account, no cloud, no server of ours in the middle.
 

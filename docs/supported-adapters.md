@@ -32,7 +32,7 @@ The app starts with the adapter's automatic protocol search. If the car does not
 
 The protocol that works is remembered for the next connection. SAE J1939 (trucks) is not used.
 
-- **OBD on UDS (SAE J1979-2)**, used by US cars from model year 2027: from app version 3.6.2, live data and the VIN are read through the UDS identifiers. Fault code reading on these cars is marked as incomplete.
+- **OBD on UDS (SAE J1979-2)**, used by US cars from model year 2027: with the next app update, live data and the VIN are read through the UDS identifiers. Fault code reading on these cars is marked as incomplete.
 - **Cars without standard OBD data** (mode 01, missing on some electric cars): trips, distance and parking still work, but engine values and diagnostics do not.
 
 ## Recommended adapters

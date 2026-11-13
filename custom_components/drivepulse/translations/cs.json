@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "Adresa k vložení do aplikace DrivePulse („Odesílat do Home Assistant“):\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Síť",
+          "sources": "Hodnoty z vlastních PID"
+        }
+      },
+      "network": {
+        "title": "Síť",
+        "description": "Adresa k vložení do aplikace DrivePulse („Odesílat do Home Assistant“):\n\n{webhook_url}",
         "data": {
           "local_only": "Jen místní síť"
         },
         "data_description": {
           "local_only": "Přijímat aplikaci jen z domovské sítě (nebo přes VPN). Vypněte pro příjem z internetu přes vaši HTTPS adresu."
         }
+      },
+      "sources": {
+        "title": "Hodnoty z vlastních PID",
+        "data": {
+          "vehicle": "Vozidlo"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Hodnoty z vlastních PID",
+        "description": "{vehicle}: pokud auto u některé z těchto hodnot posílá špatné číslo (například nabití baterie stále 0), vyberte vlastní PID, který ji čte správně: senzor i události jízdy pak použijí ten. Pole nechte prázdné pro hodnotu z aplikace. Pokud Home Assistant zná obě jednotky, hodnota se převede.",
+        "data": {
+          "battery_level": "Stav baterie",
+          "fuel_level": "Hladina paliva",
+          "range": "Dojezd",
+          "odometer": "Počítadlo kilometrů",
+          "battery_voltage": "Baterie 12 V",
+          "coolant_temperature": "Teplota chladicí kapaliny",
+          "fuel_volume": "Palivo",
+          "speed": "Rychlost",
+          "engine_speed": "Otáčky motoru"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "Jednotka tohoto vlastního PID neodpovídá tomuto senzoru."
+    },
+    "abort": {
+      "no_custom_pids": "Žádné vozidlo zatím neposlalo vlastní PID. Nastavte ho v aplikaci a vraťte se po další zprávě z auta."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Poslední jízda"
+      },
+      "engine_load": {
+        "name": "Zatížení motoru"
+      },
+      "intake_temperature": {
+        "name": "Teplota nasávaného vzduchu"
+      },
+      "outside_temperature": {
+        "name": "Venkovní teplota"
+      },
+      "oil_temperature": {
+        "name": "Teplota oleje"
+      },
+      "accelerator_pedal": {
+        "name": "Pedál plynu"
+      },
+      "intake_pressure": {
+        "name": "Tlak v sacím potrubí"
+      },
+      "mass_air_flow": {
+        "name": "Hmotnostní průtok vzduchu"
+      },
+      "fuel_rate": {
+        "name": "Spotřeba za hodinu"
+      },
+      "timing_advance": {
+        "name": "Předstih zapalování"
+      },
+      "short_fuel_trim": {
+        "name": "Krátkodobá korekce paliva"
+      },
+      "long_fuel_trim": {
+        "name": "Dlouhodobá korekce paliva"
+      },
+      "barometric_pressure": {
+        "name": "Barometrický tlak"
+      },
+      "engine_run_time": {
+        "name": "Doba chodu motoru"
+      },
+      "fuel_rail_pressure": {
+        "name": "Tlak v rozdělovači paliva"
+      },
+      "distance_with_mil": {
+        "name": "Vzdálenost s kontrolkou motoru"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Vzdálenost od vymazání kódů"
+      },
+      "torque": {
+        "name": "Točivý moment"
+      },
+      "power": {
+        "name": "Výkon"
+      },
+      "catalyst_temperature": {
+        "name": "Teplota katalyzátoru"
+      },
+      "exhaust_temperature": {
+        "name": "Teplota výfukových plynů"
+      },
+      "dpf_temperature": {
+        "name": "Teplota DPF"
+      },
+      "dpf_pressure_difference": {
+        "name": "Diferenční tlak DPF"
+      },
+      "dpf_soot_calculated": {
+        "name": "Saze v DPF (vypočtené)"
+      },
+      "dpf_soot_measured": {
+        "name": "Saze v DPF (změřené)"
+      },
+      "dpf_load": {
+        "name": "Zaplnění DPF"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Vzdálenost od regenerace DPF"
+      },
+      "adblue_level": {
+        "name": "Hladina AdBlue"
+      },
+      "gearbox_temperature": {
+        "name": "Teplota převodovky"
+      },
+      "hv_battery_health": {
+        "name": "Stav VN baterie"
+      },
+      "hv_battery_temperature": {
+        "name": "Teplota VN baterie"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Zaparkováno doma"
+      },
+      "dpf_regenerating": {
+        "name": "Probíhá regenerace DPF"
       }
     }
   }

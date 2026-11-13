@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "Adresa de lipit în aplicația DrivePulse („Trimite către Home Assistant”):\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Rețea",
+          "sources": "Valori din PID-uri personalizate"
+        }
+      },
+      "network": {
+        "title": "Rețea",
+        "description": "Adresa de lipit în aplicația DrivePulse („Trimite către Home Assistant”):\n\n{webhook_url}",
         "data": {
           "local_only": "Doar rețea locală"
         },
         "data_description": {
           "local_only": "Acceptă aplicația doar din rețeaua de acasă (sau printr-un VPN). Dezactivează pentru a primi de pe internet prin adresa ta HTTPS."
         }
+      },
+      "sources": {
+        "title": "Valori din PID-uri personalizate",
+        "data": {
+          "vehicle": "Vehicul"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Valori din PID-uri personalizate",
+        "description": "{vehicle}: dacă mașina dă un număr greșit pentru una dintre aceste valori (de exemplu o încărcare a bateriei mereu 0), alege un PID personalizat care o citește corect: senzorul și evenimentele călătoriei îl vor folosi pe acesta. Lasă un câmp gol pentru valoarea aplicației. Dacă Home Assistant cunoaște ambele unități, valoarea este convertită.",
+        "data": {
+          "battery_level": "Nivel baterie",
+          "fuel_level": "Nivel combustibil",
+          "range": "Autonomie",
+          "odometer": "Kilometraj",
+          "battery_voltage": "Baterie 12 V",
+          "coolant_temperature": "Temperatura lichidului de răcire",
+          "fuel_volume": "Combustibil",
+          "speed": "Viteză",
+          "engine_speed": "Turație motor"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "Unitatea acestui PID personalizat nu se potrivește cu acest senzor."
+    },
+    "abort": {
+      "no_custom_pids": "Niciun vehicul nu a trimis încă un PID personalizat. Configurează unul în aplicație, apoi revino după următorul mesaj al mașinii."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Ultima călătorie"
+      },
+      "engine_load": {
+        "name": "Sarcină motor"
+      },
+      "intake_temperature": {
+        "name": "Temperatura aerului admis"
+      },
+      "outside_temperature": {
+        "name": "Temperatura exterioară"
+      },
+      "oil_temperature": {
+        "name": "Temperatura uleiului"
+      },
+      "accelerator_pedal": {
+        "name": "Pedala de accelerație"
+      },
+      "intake_pressure": {
+        "name": "Presiunea din galerie"
+      },
+      "mass_air_flow": {
+        "name": "Debit de aer"
+      },
+      "fuel_rate": {
+        "name": "Consum pe oră"
+      },
+      "timing_advance": {
+        "name": "Avans la aprindere"
+      },
+      "short_fuel_trim": {
+        "name": "Corecție combustibil pe termen scurt"
+      },
+      "long_fuel_trim": {
+        "name": "Corecție combustibil pe termen lung"
+      },
+      "barometric_pressure": {
+        "name": "Presiune atmosferică"
+      },
+      "engine_run_time": {
+        "name": "Timp de funcționare a motorului"
+      },
+      "fuel_rail_pressure": {
+        "name": "Presiunea din rampa de combustibil"
+      },
+      "distance_with_mil": {
+        "name": "Distanță cu martorul motorului aprins"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Distanță de la ștergerea codurilor"
+      },
+      "torque": {
+        "name": "Cuplu"
+      },
+      "power": {
+        "name": "Putere"
+      },
+      "catalyst_temperature": {
+        "name": "Temperatura catalizatorului"
+      },
+      "exhaust_temperature": {
+        "name": "Temperatura gazelor de evacuare"
+      },
+      "dpf_temperature": {
+        "name": "Temperatura DPF"
+      },
+      "dpf_pressure_difference": {
+        "name": "Presiune diferențială DPF"
+      },
+      "dpf_soot_calculated": {
+        "name": "Funingine DPF (calculată)"
+      },
+      "dpf_soot_measured": {
+        "name": "Funingine DPF (măsurată)"
+      },
+      "dpf_load": {
+        "name": "Încărcare DPF"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Distanță de la regenerarea DPF"
+      },
+      "adblue_level": {
+        "name": "Nivel AdBlue"
+      },
+      "gearbox_temperature": {
+        "name": "Temperatura cutiei de viteze"
+      },
+      "hv_battery_health": {
+        "name": "Sănătatea bateriei de înaltă tensiune"
+      },
+      "hv_battery_temperature": {
+        "name": "Temperatura bateriei de înaltă tensiune"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Parcată acasă"
+      },
+      "dpf_regenerating": {
+        "name": "Regenerare DPF în curs"
       }
     }
   }

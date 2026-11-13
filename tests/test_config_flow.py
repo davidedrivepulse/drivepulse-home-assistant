@@ -64,9 +64,14 @@ async def test_webhook_is_local_only_by_default(hass: HomeAssistant, entry) -> N
 
 async def test_options_switch_off_local_only(hass: HomeAssistant, entry) -> None:
     result = await hass.config_entries.options.async_init(entry.entry_id)
-    assert result["type"] is FlowResultType.FORM
+    assert result["type"] is FlowResultType.MENU
     assert WEBHOOK_ID in result["description_placeholders"]["webhook_url"]
 
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {"next_step_id": "network"}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert WEBHOOK_ID in result["description_placeholders"]["webhook_url"]
     result = await hass.config_entries.options.async_configure(
         result["flow_id"], {CONF_LOCAL_ONLY: False}
     )

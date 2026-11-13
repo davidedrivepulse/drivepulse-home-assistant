@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "Adresse à coller dans l'application DrivePulse (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Réseau",
+          "sources": "Valeurs des PID personnalisés"
+        }
+      },
+      "network": {
+        "title": "Réseau",
+        "description": "Adresse à coller dans l'application DrivePulse (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
         "data": {
           "local_only": "Réseau local uniquement"
         },
         "data_description": {
           "local_only": "N'accepter l'application que depuis votre réseau domestique (ou un VPN). Désactivez pour recevoir depuis internet via votre adresse HTTPS."
         }
+      },
+      "sources": {
+        "title": "Valeurs des PID personnalisés",
+        "data": {
+          "vehicle": "Véhicule"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Valeurs des PID personnalisés",
+        "description": "{vehicle} : si la voiture donne un mauvais chiffre pour l'une de ces valeurs (par exemple une charge de batterie toujours à 0), choisissez un PID personnalisé qui la lit correctement : le capteur et les événements de trajet l'utiliseront. Laissez un champ vide pour la valeur de l'application. Si Home Assistant connaît les deux unités, la valeur est convertie.",
+        "data": {
+          "battery_level": "Niveau de batterie",
+          "fuel_level": "Niveau de carburant",
+          "range": "Autonomie",
+          "odometer": "Compteur kilométrique",
+          "battery_voltage": "Batterie 12 V",
+          "coolant_temperature": "Température du liquide de refroidissement",
+          "fuel_volume": "Carburant",
+          "speed": "Vitesse",
+          "engine_speed": "Régime moteur"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "L'unité de ce PID personnalisé ne convient pas à ce capteur."
+    },
+    "abort": {
+      "no_custom_pids": "Aucun véhicule n'a encore envoyé de PID personnalisé. Configurez-en un dans l'application, puis revenez après le prochain message de la voiture."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Dernier trajet"
+      },
+      "engine_load": {
+        "name": "Charge moteur"
+      },
+      "intake_temperature": {
+        "name": "Température de l'air d'admission"
+      },
+      "outside_temperature": {
+        "name": "Température extérieure"
+      },
+      "oil_temperature": {
+        "name": "Température d'huile"
+      },
+      "accelerator_pedal": {
+        "name": "Pédale d'accélérateur"
+      },
+      "intake_pressure": {
+        "name": "Pression du collecteur"
+      },
+      "mass_air_flow": {
+        "name": "Débit d'air"
+      },
+      "fuel_rate": {
+        "name": "Débit de carburant"
+      },
+      "timing_advance": {
+        "name": "Avance à l'allumage"
+      },
+      "short_fuel_trim": {
+        "name": "Correction carburant court terme"
+      },
+      "long_fuel_trim": {
+        "name": "Correction carburant long terme"
+      },
+      "barometric_pressure": {
+        "name": "Pression atmosphérique"
+      },
+      "engine_run_time": {
+        "name": "Temps de fonctionnement du moteur"
+      },
+      "fuel_rail_pressure": {
+        "name": "Pression de rampe"
+      },
+      "distance_with_mil": {
+        "name": "Distance avec voyant moteur allumé"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Distance depuis l'effacement des codes"
+      },
+      "torque": {
+        "name": "Couple"
+      },
+      "power": {
+        "name": "Puissance"
+      },
+      "catalyst_temperature": {
+        "name": "Température du catalyseur"
+      },
+      "exhaust_temperature": {
+        "name": "Température des gaz d'échappement"
+      },
+      "dpf_temperature": {
+        "name": "Température du FAP"
+      },
+      "dpf_pressure_difference": {
+        "name": "Pression différentielle du FAP"
+      },
+      "dpf_soot_calculated": {
+        "name": "Suie du FAP (calculée)"
+      },
+      "dpf_soot_measured": {
+        "name": "Suie du FAP (mesurée)"
+      },
+      "dpf_load": {
+        "name": "Charge du FAP"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Distance depuis la régénération du FAP"
+      },
+      "adblue_level": {
+        "name": "Niveau d'AdBlue"
+      },
+      "gearbox_temperature": {
+        "name": "Température de la boîte de vitesses"
+      },
+      "hv_battery_health": {
+        "name": "Santé de la batterie HT"
+      },
+      "hv_battery_temperature": {
+        "name": "Température de la batterie HT"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Garée à la maison"
+      },
+      "dpf_regenerating": {
+        "name": "Régénération du FAP en cours"
       }
     }
   }

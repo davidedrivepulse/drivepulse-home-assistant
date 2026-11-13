@@ -31,6 +31,17 @@ PARKED_AT_HOME = BinarySensorEntityDescription(
     translation_key="parked_at_home",
     device_class=BinarySensorDeviceClass.PRESENCE,
 )
+# From `extended`: appears when the car first says yes or no.
+OPTIONAL = {
+    d.key: d
+    for d in (
+        BinarySensorEntityDescription(
+            key="dpf_regenerating",
+            translation_key="dpf_regenerating",
+            device_class=BinarySensorDeviceClass.RUNNING,
+        ),
+    )
+}
 
 
 async def async_setup_entry(
@@ -45,6 +56,10 @@ async def async_setup_entry(
         return [
             DrivePulseBinarySensor(hub, vehicle, TRIP_IN_PROGRESS),
             DrivePulseBinarySensor(hub, vehicle, ADAPTER_CONNECTED),
+        ] + [
+            DrivePulseBinarySensor(hub, vehicle, OPTIONAL[key])
+            for key in sorted(vehicle.keys)
+            if key in OPTIONAL
         ]
 
     async_add_entities(
@@ -61,6 +76,13 @@ async def async_setup_entry(
         DrivePulseBinarySensor(hub, vehicle, PARKED_AT_HOME)
         for vehicle in hub.vehicles.values()
         if vehicle.at_home_known
+    )
+    hub.listen_new_key(
+        lambda vehicle, key: (
+            async_add_entities([DrivePulseBinarySensor(hub, vehicle, OPTIONAL[key])])
+            if key in OPTIONAL
+            else None
+        )
     )
     hub.listen_at_home_known(
         lambda vehicle: async_add_entities(
@@ -87,6 +109,8 @@ class DrivePulseBinarySensor(DrivePulseEntity, BinarySensorEntity):
             return self._vehicle.in_trip
         if self._key == "parked_at_home":
             return self._vehicle.at_home
+        if self._key in OPTIONAL:
+            return self._vehicle.flags.get(self._key)
         return self._vehicle.adapter_connected
 
     @property

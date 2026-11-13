@@ -12,6 +12,9 @@ import json
 import pathlib
 import sys
 
+from extended_names import names as extended_names
+from options_texts import options as options_block
+
 ARB = pathlib.Path(sys.argv[1])
 OUT = pathlib.Path(__file__).resolve().parent.parent / "custom_components/drivepulse/translations"
 
@@ -173,21 +176,21 @@ def build(lang: str) -> dict:
             "step": {"user": {"title": t["user_title"], "description": t["user_desc"]}},
             "create_entry": {"default": fill(t["created"])},
         },
-        "options": {
-            "step": {
-                "init": {
-                    "description": fill(t["opt_desc"]),
-                    "data": {"local_only": t["local_only"]},
-                    "data_description": {"local_only": t["local_only_desc"]},
-                }
-            }
-        },
+        "options": options_block(
+            lang,
+            fill(t["opt_desc"]),
+            t["local_only"],
+            t["local_only_desc"],
+            {k: t[k] for k in SENSORS},
+        ),
         "entity": {
-            "sensor": {k: {"name": t[k]} for k in SENSORS},
+            "sensor": {k: {"name": t[k]} for k in SENSORS}
+            | {k: {"name": v} for k, v in extended_names(lang)[0].items()},
             "binary_sensor": {
                 "trip_in_progress": {"name": t["trip_in_progress"]},
                 "adapter_connected": {"name": t["adapter_connected"]},
-            },
+            }
+            | {k: {"name": v} for k, v in extended_names(lang)[1].items()},
         },
     }
 

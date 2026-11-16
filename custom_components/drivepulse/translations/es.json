@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "Dirección para pegar en la app DrivePulse («Enviar a Home Assistant»):\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Red",
+          "sources": "Valores de PID personalizados"
+        }
+      },
+      "network": {
+        "title": "Red",
+        "description": "Dirección para pegar en la app DrivePulse («Enviar a Home Assistant»):\n\n{webhook_url}",
         "data": {
           "local_only": "Solo red local"
         },
         "data_description": {
           "local_only": "Aceptar la app solo desde tu red doméstica (o una VPN). Desactívalo para recibir desde internet con tu dirección HTTPS."
         }
+      },
+      "sources": {
+        "title": "Valores de PID personalizados",
+        "data": {
+          "vehicle": "Vehículo"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Valores de PID personalizados",
+        "description": "{vehicle}: si el coche da un número erróneo para alguno de estos valores (por ejemplo una carga de batería siempre en 0), elige un PID personalizado que lo lea bien: el sensor y los eventos del viaje usarán ese. Deja un campo vacío para el valor de la app. Si Home Assistant conoce ambas unidades, el valor se convierte.",
+        "data": {
+          "battery_level": "Nivel de batería",
+          "fuel_level": "Nivel de combustible",
+          "range": "Autonomía",
+          "odometer": "Odómetro",
+          "battery_voltage": "Batería de 12 V",
+          "coolant_temperature": "Temperatura del refrigerante",
+          "fuel_volume": "Combustible",
+          "speed": "Velocidad",
+          "engine_speed": "Régimen del motor"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "La unidad de este PID personalizado no corresponde a este sensor."
+    },
+    "abort": {
+      "no_custom_pids": "Ningún vehículo ha enviado aún un PID personalizado. Configura uno en la app y vuelve después del próximo mensaje del coche."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Último viaje"
+      },
+      "engine_load": {
+        "name": "Carga del motor"
+      },
+      "intake_temperature": {
+        "name": "Temperatura del aire de admisión"
+      },
+      "outside_temperature": {
+        "name": "Temperatura exterior"
+      },
+      "oil_temperature": {
+        "name": "Temperatura del aceite"
+      },
+      "accelerator_pedal": {
+        "name": "Pedal del acelerador"
+      },
+      "intake_pressure": {
+        "name": "Presión del colector"
+      },
+      "mass_air_flow": {
+        "name": "Flujo de aire"
+      },
+      "fuel_rate": {
+        "name": "Consumo por hora"
+      },
+      "timing_advance": {
+        "name": "Avance del encendido"
+      },
+      "short_fuel_trim": {
+        "name": "Ajuste de combustible a corto plazo"
+      },
+      "long_fuel_trim": {
+        "name": "Ajuste de combustible a largo plazo"
+      },
+      "barometric_pressure": {
+        "name": "Presión barométrica"
+      },
+      "engine_run_time": {
+        "name": "Tiempo de motor en marcha"
+      },
+      "fuel_rail_pressure": {
+        "name": "Presión del rail"
+      },
+      "distance_with_mil": {
+        "name": "Distancia con testigo de motor encendido"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Distancia desde el borrado de códigos"
+      },
+      "torque": {
+        "name": "Par"
+      },
+      "power": {
+        "name": "Potencia"
+      },
+      "catalyst_temperature": {
+        "name": "Temperatura del catalizador"
+      },
+      "exhaust_temperature": {
+        "name": "Temperatura de gases de escape"
+      },
+      "dpf_temperature": {
+        "name": "Temperatura del DPF"
+      },
+      "dpf_pressure_difference": {
+        "name": "Presión diferencial del DPF"
+      },
+      "dpf_soot_calculated": {
+        "name": "Hollín del DPF (calculado)"
+      },
+      "dpf_soot_measured": {
+        "name": "Hollín del DPF (medido)"
+      },
+      "dpf_load": {
+        "name": "Carga del DPF"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Distancia desde la regeneración del DPF"
+      },
+      "adblue_level": {
+        "name": "Nivel de AdBlue"
+      },
+      "gearbox_temperature": {
+        "name": "Temperatura de la caja de cambios"
+      },
+      "hv_battery_health": {
+        "name": "Salud de la batería de alta tensión"
+      },
+      "hv_battery_temperature": {
+        "name": "Temperatura de la batería de alta tensión"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Aparcado en casa"
+      },
+      "dpf_regenerating": {
+        "name": "Regeneración del DPF en curso"
       }
     }
   }

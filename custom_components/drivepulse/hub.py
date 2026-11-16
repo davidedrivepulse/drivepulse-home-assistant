@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import math
+import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -19,6 +20,7 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
 
 from .const import (
+    CONF_SOURCES,
     DEFAULT_VEHICLE_NAME,
     DOMAIN,
     EVENT_TRIP_END,
@@ -33,6 +35,7 @@ from .const import (
     MSG_TRIP_RESEND,
     MSG_TRIP_START,
 )
+from .units import SOURCE_UNITS, convert
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,10 +55,66 @@ NUMERIC_KEYS: dict[str, str] = {
     "rpm": "engine_speed",
 }
 
+# `extended` key -> sensor key. The app puts only the readings the car gave
+# in `extended`, so a key missing from it is a null. hv_soc_pct, odometer_km,
+# fuel_level_l and range_km are left out: they are the same numbers as the
+# top-level keys above.
+EXTENDED_KEYS: dict[str, str] = {
+    "engine_load_pct": "engine_load",
+    "intake_temp_c": "intake_temperature",
+    "ambient_temp_c": "outside_temperature",
+    "oil_temp_c": "oil_temperature",
+    "pedal_pct": "accelerator_pedal",
+    "map_kpa": "intake_pressure",
+    "maf_gs": "mass_air_flow",
+    "fuel_rate_lh": "fuel_rate",
+    "timing_advance_deg": "timing_advance",
+    "short_fuel_trim_pct": "short_fuel_trim",
+    "long_fuel_trim_pct": "long_fuel_trim",
+    "baro_kpa": "barometric_pressure",
+    "engine_run_time_s": "engine_run_time",
+    "fuel_rail_kpa": "fuel_rail_pressure",
+    "distance_with_mil_km": "distance_with_mil",
+    "distance_since_clear_km": "distance_since_codes_cleared",
+    "torque_nm": "torque",
+    "power_kw": "power",
+    "catalyst_temp_c": "catalyst_temperature",
+    "egt_c": "exhaust_temperature",
+    "dpf_temp_c": "dpf_temperature",
+    "dpf_delta_kpa": "dpf_pressure_difference",
+    "dpf_soot_calc_g": "dpf_soot_calculated",
+    "dpf_soot_meas_g": "dpf_soot_measured",
+    "dpf_load_pct": "dpf_load",
+    "dpf_km_since_regen": "distance_since_dpf_regeneration",
+    "adblue_level_pct": "adblue_level",
+    "gearbox_temp_c": "gearbox_temperature",
+    "hv_soh_pct": "hv_battery_health",
+    "hv_battery_temp_c": "hv_battery_temperature",
+}
+# `extended` yes/no readings -> binary sensor key.
+EXTENDED_FLAGS: dict[str, str] = {"dpf_regen_active": "dpf_regenerating"}
+
 # A missing value in a message makes the sensor "unavailable", EXCEPT for
 # these: the app only sends them in some messages (the odometer and the codes
 # come with trip_end, not with every live), so a null must not blank them.
-STICKY_KEYS = {"odometer", "range", "trouble_codes"}
+# The extended ones change slowly and are missing whenever the adapter is not
+# connected (a trip_end after the engine is off).
+STICKY_KEYS = {
+    "odometer",
+    "range",
+    "trouble_codes",
+    "hv_battery_health",
+    "adblue_level",
+    "distance_with_mil",
+    "distance_since_codes_cleared",
+    "distance_since_dpf_regeneration",
+}
+
+# Custom PIDs: the user's own requests to the car, configured in the app, sent
+# under `custom` with a stable key `cp<id>` (a rename keeps the key). More than
+# this many per vehicle is not a car, it is a broken or forged sender.
+CUSTOM_ID = re.compile(r"cp[0-9]{1,6}")
+MAX_CUSTOM = 50
 
 # Sensors every vehicle gets on its first message. The others (fuel or
 # electric charge, range, litres, speed, rpm) appear when the car first sends
@@ -147,6 +206,31 @@ def _more_recent(trip: dict[str, Any], last: dict[str, Any] | None) -> bool:
 
 
 @dataclass
+class CustomPid:
+    """One custom PID of a vehicle: what the user called it, and its reading."""
+
+    name: str
+    unit: str | None
+    value: float | int | None = None
+    at: str | None = None
+
+    def as_event(self) -> dict[str, Any]:
+        return {"name": self.name, "value": self.value, "unit": self.unit}
+
+
+def _custom_from_dict(data: Any) -> dict[str, CustomPid]:
+    if not isinstance(data, dict):
+        return {}
+    return {
+        cp_id: CustomPid(
+            name=_text(item.get("name")) or cp_id, unit=_text(item.get("unit"), 16)
+        )
+        for cp_id, item in list(data.items())[:MAX_CUSTOM]
+        if isinstance(cp_id, str) and CUSTOM_ID.fullmatch(cp_id) and isinstance(item, dict)
+    }
+
+
+@dataclass
 class Vehicle:
     """What the integration knows about one vehicle (named in the app)."""
 
@@ -154,6 +238,8 @@ class Vehicle:
     slug: str
     keys: set[str] = field(default_factory=set)
     values: dict[str, float | int | None] = field(default_factory=dict)
+    flags: dict[str, bool | None] = field(default_factory=dict)
+    custom: dict[str, CustomPid] = field(default_factory=dict)
     codes: list[str] | None = None
     in_trip: bool = False
     adapter_connected: bool | None = None
@@ -172,6 +258,12 @@ class Vehicle:
             "keys": sorted(self.keys),
             "values": {k: v for k, v in self.values.items() if k in STICKY_KEYS},
             "codes": self.codes,
+            # Name and unit only: the entities come back after a restart, the
+            # reading comes with the next message.
+            "custom": {
+                cp_id: {"name": pid.name, "unit": pid.unit}
+                for cp_id, pid in self.custom.items()
+            },
             "in_trip": self.in_trip,
             "last_trip": self.last_trip,
             "at_home": self.at_home,
@@ -187,6 +279,7 @@ class Vehicle:
             keys=set(data.get("keys", [])),
             values=dict(data.get("values", {})),
             codes=data.get("codes"),
+            custom=_custom_from_dict(data.get("custom")),
             in_trip=bool(data.get("in_trip", False)),
             last_trip=data.get("last_trip"),
             at_home=(
@@ -194,6 +287,22 @@ class Vehicle:
             ),
             at_home_known=bool(data.get("at_home_known", False)),
         )
+
+
+def _sources(options: Any) -> dict[str, dict[str, str]]:
+    """The custom PIDs standing in for built-in sensors, as saved in the options."""
+    found: dict[str, dict[str, str]] = {}
+    for slug, mapping in (options if isinstance(options, dict) else {}).items():
+        if not isinstance(slug, str) or not isinstance(mapping, dict):
+            continue
+        found[slug] = {
+            key: cp_id
+            for key, cp_id in mapping.items()
+            if key in SOURCE_UNITS
+            and isinstance(cp_id, str)
+            and CUSTOM_ID.fullmatch(cp_id)
+        }
+    return found
 
 
 def signal(entry_id: str, slug: str) -> str:
@@ -213,11 +322,14 @@ class DrivePulseHub:
         self.hass = hass
         self.entry = entry
         self.vehicles: dict[str, Vehicle] = {}
+        # Read once: a change of the options reloads the entry.
+        self.sources = _sources(entry.options.get(CONF_SOURCES))
         self._store: Store[dict[str, Any]] = Store(
             hass, STORE_VERSION, f"{DOMAIN}.{entry.entry_id}"
         )
         self._new_vehicle_listeners: list[Callable[[Vehicle], None]] = []
         self._new_key_listeners: list[Callable[[Vehicle, str], None]] = []
+        self._new_custom_listeners: list[Callable[[Vehicle, str], None]] = []
         self._at_home_listeners: list[Callable[[Vehicle], None]] = []
 
     async def async_load(self) -> None:
@@ -275,6 +387,11 @@ class DrivePulseHub:
     @callback
     def listen_new_key(self, listener: Callable[[Vehicle, str], None]) -> None:
         self._new_key_listeners.append(listener)
+
+    @callback
+    def listen_new_custom(self, listener: Callable[[Vehicle, str], None]) -> None:
+        """Called with (vehicle, cp_id) when a custom PID first has a number."""
+        self._new_custom_listeners.append(listener)
 
     @callback
     def listen_at_home_known(self, listener: Callable[[Vehicle], None]) -> None:
@@ -344,20 +461,101 @@ class DrivePulseHub:
         )
 
     @callback
-    def _apply(self, vehicle: Vehicle, event: str, payload: dict[str, Any]) -> None:
-        for webhook_key, key in NUMERIC_KEYS.items():
-            if webhook_key not in payload:
-                continue  # an older app: no change
-            number = _number(payload[webhook_key])
-            if number is None:
-                if key not in STICKY_KEYS:
-                    vehicle.values[key] = None
+    def _new_key(self, vehicle: Vehicle, key: str) -> None:
+        if key not in vehicle.keys:
+            vehicle.keys.add(key)
+            for listener in self._new_key_listeners:
+                listener(vehicle, key)
+
+    @callback
+    def _set_number(self, vehicle: Vehicle, key: str, value: Any) -> None:
+        number = _number(value)
+        if number is None:
+            if key not in STICKY_KEYS:
+                vehicle.values[key] = None
+            return
+        vehicle.values[key] = number
+        self._new_key(vehicle, key)
+
+    @callback
+    def _apply_extended(self, vehicle: Vehicle, extended: dict[str, Any]) -> None:
+        """The extended readings: a key missing here is a null."""
+        for webhook_key, key in EXTENDED_KEYS.items():
+            self._set_number(vehicle, key, extended.get(webhook_key))
+        for webhook_key, key in EXTENDED_FLAGS.items():
+            flag = extended.get(webhook_key)
+            vehicle.flags[key] = flag if isinstance(flag, bool) else None
+            if isinstance(flag, bool):
+                self._new_key(vehicle, key)
+
+    @callback
+    def _apply_custom(self, vehicle: Vehicle, custom: dict[str, Any]) -> None:
+        """The custom PIDs: a PID missing here has no reading now.
+
+        A PID becomes a sensor with its first number, so one the car never
+        answers does not show up. Its name and unit follow the app: a rename
+        or a new unit in the app changes the same sensor.
+        """
+        seen: set[str] = set()
+        for cp_id, item in custom.items():
+            if not (
+                isinstance(cp_id, str)
+                and CUSTOM_ID.fullmatch(cp_id)
+                and isinstance(item, dict)
+            ):
                 continue
-            vehicle.values[key] = number
-            if key not in vehicle.keys:
-                vehicle.keys.add(key)
-                for listener in self._new_key_listeners:
-                    listener(vehicle, key)
+            number = _number(item.get("value"))
+            pid = vehicle.custom.get(cp_id)
+            new = pid is None
+            if pid is None:
+                if number is None or len(vehicle.custom) >= MAX_CUSTOM:
+                    continue
+                pid = vehicle.custom[cp_id] = CustomPid(name=cp_id, unit=None)
+            pid.name = _text(item.get("name")) or pid.name
+            pid.unit = _text(item.get("unit"), 16)
+            pid.value = number
+            pid.at = _text(item.get("at"), 40) if number is not None else None
+            seen.add(cp_id)
+            if new:
+                for listener in self._new_custom_listeners:
+                    listener(vehicle, cp_id)
+        for cp_id, pid in vehicle.custom.items():
+            if cp_id not in seen:
+                pid.value = pid.at = None
+
+    @callback
+    def source_of(self, vehicle: Vehicle, key: str) -> str | None:
+        """The custom PID a built-in sensor takes its value from, if any."""
+        return self.sources.get(vehicle.slug, {}).get(key)
+
+    @callback
+    def _apply_sources(self, vehicle: Vehicle) -> None:
+        """Built-in sensors that read a custom PID instead of the app's number.
+
+        In the built-in sensor's unit when Home Assistant can convert, as is
+        otherwise. A PID without a reading now is a null, with the usual rule
+        for the sticky sensors.
+        """
+        for key, cp_id in self.sources.get(vehicle.slug, {}).items():
+            pid = vehicle.custom.get(cp_id)
+            value = None
+            if pid is not None and pid.value is not None:
+                value = convert(pid.value, pid.unit, SOURCE_UNITS[key])
+            self._set_number(vehicle, key, value)
+
+    @callback
+    def _apply(self, vehicle: Vehicle, event: str, payload: dict[str, Any]) -> None:
+        sources = self.sources.get(vehicle.slug, {})
+        for webhook_key, key in NUMERIC_KEYS.items():
+            if key in sources:
+                continue  # read from its custom PID below
+            if webhook_key in payload:  # missing: an older app, no change
+                self._set_number(vehicle, key, payload[webhook_key])
+        if isinstance(payload.get("extended"), dict):
+            self._apply_extended(vehicle, payload["extended"])
+        if isinstance(payload.get("custom"), dict):  # app 3.5.9 and later
+            self._apply_custom(vehicle, payload["custom"])
+            self._apply_sources(vehicle)
 
         if isinstance(payload.get("dtc"), list):
             vehicle.codes = [
@@ -537,8 +735,18 @@ class DrivePulseHub:
         }
         # Every field is always there (None when the car did not give it), so
         # an automation template never trips on a missing key.
+        sources = self.sources.get(vehicle.slug, {})
         for key in EVENT_FIELDS:
+            if NUMERIC_KEYS.get(key) in sources:
+                # The value the sensor shows, from its custom PID.
+                data[key] = vehicle.values.get(NUMERIC_KEYS[key])
+                continue
             data[key] = payload[key] if _plain(payload.get(key)) else None
+        # The custom PIDs by their stable key, with the name and unit the user
+        # gave them; value None when the car did not answer this time.
+        data["custom"] = {
+            cp_id: pid.as_event() for cp_id, pid in vehicle.custom.items()
+        }
         if event == MSG_TRIP_END and vehicle.last_trip:
             data["trip"] = dict(vehicle.last_trip)
         self.hass.bus.async_fire(

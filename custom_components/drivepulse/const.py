@@ -6,6 +6,9 @@ DOMAIN = "drivepulse"
 
 CONF_LOCAL_ONLY = "local_only"
 DEFAULT_LOCAL_ONLY = True
+# {vehicle slug: {built-in sensor key: custom PID key}}: the built-in sensors
+# that take their value from a custom PID instead of the app's own reading.
+CONF_SOURCES = "sources"
 
 EVENT_TRIP_START = "drivepulse_trip_start"
 EVENT_TRIP_END = "drivepulse_trip_end"

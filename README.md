@@ -25,8 +25,14 @@ For each vehicle (named as in the app) one device, **without the VIN** (the app 
 | Adapter connected | Whether the app is talking to the car right now |
 | Parked at home | Whether the last trip ended inside a Home place saved for this car in the app. It appears after the first trip with **Car at home at trip end** switched on in the app (off by default). **Unknown** when the app cannot say: no Home place for this car, or GPS lost before the car stopped. During a trip it keeps the last value: **Trip in progress** tells you the car is moving |
 | Fuel (litres), Speed, Engine speed | Appear when the car reports them; speed and engine speed are disabled by default (turn them on if you want them) |
+| Extended readings | Oil, intake, outside, gearbox, catalyst and exhaust temperatures, particulate filter (DPF) temperature, load, soot and **DPF regenerating**, AdBlue level, high-voltage battery health and temperature, distances since the codes were cleared, and more. Each appears when the car first reports it. The ones that change every second (engine load, pedal, air flow, fuel trims, torque, power, ...) are disabled by default |
+| Custom PIDs | Every custom PID you set up in the app becomes a sensor named as in the app, from its first value. Rename it or change its unit in the app and the same sensor follows, with its history. A known unit (°C, V, A, kW, kWh, kPa, mbar, bar, psi, km/h, km, L, s, g, ...) gives Home Assistant's matching device class, so it can convert the unit; any other unit is shown as typed. `measured_at` is the time of the reading |
 
-When the car does not give a value, the entity shows **Unavailable** instead of a wrong number. The odometer, the range and the trouble codes keep their last known value between messages, because the app only sends them at the end of a trip.
+When the car does not give a value, the entity shows **Unavailable** instead of a wrong number. The odometer, the range and the trouble codes keep their last known value between messages, because the app only sends them at the end of a trip. So do the AdBlue level, the high-voltage battery health and the distances since the codes were cleared or since the last DPF regeneration, which the car only gives while the adapter is connected.
+
+### When the car reads a value wrong
+
+Some cars answer a standard reading with a wrong number (for example a battery charge that is always 0) while a custom PID in the app reads it right. Then open **Settings > Devices & services > DrivePulse > Configure > Values from custom PIDs**, pick the vehicle, and choose the custom PID for that sensor. The built-in sensor (with its icon, history and device class) and the trip events then use the custom PID's value instead, and the sensor shows it in the `source_pid` attribute. Empty the field to go back to the app's value. When Home Assistant knows both units the value is converted (a PID in mV for the 12 V battery in V); a unit of another kind (°C for a battery charge) is refused. This works for Battery level, Fuel level, Range, Odometer, 12 V battery, Coolant temperature, Fuel, Speed and Engine speed. The option appears once the car has sent its first custom PID.
 
 ### Events for automations
 
@@ -37,6 +43,8 @@ These events are fired on the Home Assistant bus, so you can automate "the car l
 | `drivepulse_trip_start` | a trip starts | `vehicle`, `device_id`, `fuel_level_pct`, `odometer_km`, `battery_voltage`, ... |
 | `drivepulse_trip_end` | a trip ends | the same, plus `trip` (distance, duration, average and maximum speed, consumption) |
 | `drivepulse_trip_resent` | you send a saved trip again from the trip's page in the app | `vehicle`, `device_id`, `sent_at`, `trip` |
+
+Both `drivepulse_trip_start` and `drivepulse_trip_end` also carry `custom`: your custom PIDs by their key, for example `custom.cp3` is `{name: Oil, value: 64, unit: °C}`. The key stays the same when you rename the PID (it is the `pid` attribute of the sensor); `value` is `null` when the car did not answer.
 
 A trip sent again is never a `drivepulse_trip_end`, so "the car arrived" automations do not run for an old trip. It becomes the **Last trip** only if it is the same trip (for example sent again after a correction) or a more recent one, and then **Parked at home** changes with it; it changes no other entity.
 
@@ -262,7 +270,7 @@ That is all. No YAML.
 The phone is on mobile data while you drive, so a home address (`http://homeassistant.local:8123/...`) only works on your home Wi-Fi or through a VPN. The start of a trip (in front of the house) and the end (when the phone is back on Wi-Fi) normally arrive; the app retries them for ten minutes. To receive everything on the road:
 
 - use a VPN such as Tailscale and the address with the VPN name or IP, **or**
-- use the HTTPS address of your Home Assistant (Nabu Casa or your own domain): `https://<your address>/api/webhook/<id>`, and turn off **Local network only** in **Configure** (by default the webhook accepts only your local network).
+- use the HTTPS address of your Home Assistant (Nabu Casa or your own domain): `https://<your address>/api/webhook/<id>`, and turn off **Local network only** in **Configure > Network** (by default the webhook accepts only your local network).
 
 The webhook id in the address is the secret: anyone who has it can send data to your Home Assistant. Do not publish it.
 

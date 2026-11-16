@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "A DrivePulse alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Hálózat",
+          "sources": "Értékek egyéni PID-ekből"
+        }
+      },
+      "network": {
+        "title": "Hálózat",
+        "description": "A DrivePulse alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
         "data": {
           "local_only": "Csak helyi hálózat"
         },
         "data_description": {
           "local_only": "Az alkalmazást csak az otthoni hálózatról (vagy VPN-ről) fogadja el. Kapcsolja ki, ha az internetről, a HTTPS címen keresztül akar adatot kapni."
         }
+      },
+      "sources": {
+        "title": "Értékek egyéni PID-ekből",
+        "data": {
+          "vehicle": "Jármű"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Értékek egyéni PID-ekből",
+        "description": "{vehicle}: ha az autó ezek közül valamelyikre rossz számot ad (például az akkumulátor töltöttsége mindig 0), válasszon egy egyéni PID-et, amely helyesen olvassa: az érzékelő és az út eseményei azt használják. Hagyja üresen a mezőt az alkalmazás saját értékéhez. Ha a Home Assistant mindkét mértékegységet ismeri, az értéket átváltja.",
+        "data": {
+          "battery_level": "Akkumulátorszint",
+          "fuel_level": "Üzemanyagszint",
+          "range": "Hatótávolság",
+          "odometer": "Kilométeróra",
+          "battery_voltage": "12 V-os akkumulátor",
+          "coolant_temperature": "Hűtőfolyadék hőmérséklete",
+          "fuel_volume": "Üzemanyag",
+          "speed": "Sebesség",
+          "engine_speed": "Motorfordúlatszám"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "Ennek az egyéni PID-nek a mértékegysége nem illik ehhez az érzékelőhöz."
+    },
+    "abort": {
+      "no_custom_pids": "Még egyetlen jármű sem küldött egyéni PID-et. Állítson be egyet az alkalmazásban, és térjen vissza az autó következő üzenete után."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Utolsó út"
+      },
+      "engine_load": {
+        "name": "Motorterhelés"
+      },
+      "intake_temperature": {
+        "name": "Beszívott levegő hőmérséklete"
+      },
+      "outside_temperature": {
+        "name": "Külső hőmérséklet"
+      },
+      "oil_temperature": {
+        "name": "Olajhőmérséklet"
+      },
+      "accelerator_pedal": {
+        "name": "Gázpedál"
+      },
+      "intake_pressure": {
+        "name": "Szívócsőnyomás"
+      },
+      "mass_air_flow": {
+        "name": "Légtömegmérő"
+      },
+      "fuel_rate": {
+        "name": "Óránkénti fogyasztás"
+      },
+      "timing_advance": {
+        "name": "Gyújtási szög"
+      },
+      "short_fuel_trim": {
+        "name": "Rövid távú üzemanyag-korrekció"
+      },
+      "long_fuel_trim": {
+        "name": "Hosszú távú üzemanyag-korrekció"
+      },
+      "barometric_pressure": {
+        "name": "Légnyomás"
+      },
+      "engine_run_time": {
+        "name": "Motor üzemideje"
+      },
+      "fuel_rail_pressure": {
+        "name": "Rail nyomás"
+      },
+      "distance_with_mil": {
+        "name": "Megtett táv motorhiba-lámpával"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Megtett táv a kódok törlése óta"
+      },
+      "torque": {
+        "name": "Nyomaték"
+      },
+      "power": {
+        "name": "Teljesítmény"
+      },
+      "catalyst_temperature": {
+        "name": "Katalizátor hőmérséklete"
+      },
+      "exhaust_temperature": {
+        "name": "Kipufogógáz hőmérséklete"
+      },
+      "dpf_temperature": {
+        "name": "DPF hőmérséklet"
+      },
+      "dpf_pressure_difference": {
+        "name": "DPF nyomáskülönbség"
+      },
+      "dpf_soot_calculated": {
+        "name": "DPF korom (számított)"
+      },
+      "dpf_soot_measured": {
+        "name": "DPF korom (mért)"
+      },
+      "dpf_load": {
+        "name": "DPF telítettség"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Megtett táv a DPF regenerálás óta"
+      },
+      "adblue_level": {
+        "name": "AdBlue szint"
+      },
+      "gearbox_temperature": {
+        "name": "Váltó hőmérséklete"
+      },
+      "hv_battery_health": {
+        "name": "Nagyfeszültségű akkumulátor állapota"
+      },
+      "hv_battery_temperature": {
+        "name": "Nagyfeszültségű akkumulátor hőmérséklete"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Otthon parkol"
+      },
+      "dpf_regenerating": {
+        "name": "DPF regenerálás folyamatban"
       }
     }
   }

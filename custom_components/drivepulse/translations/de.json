@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "Adresse für die DrivePulse-App („An Home Assistant senden“):\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Netzwerk",
+          "sources": "Werte aus eigenen PIDs"
+        }
+      },
+      "network": {
+        "title": "Netzwerk",
+        "description": "Adresse für die DrivePulse-App („An Home Assistant senden“):\n\n{webhook_url}",
         "data": {
           "local_only": "Nur lokales Netzwerk"
         },
         "data_description": {
           "local_only": "Die App nur aus dem Heimnetz (oder per VPN) akzeptieren. Ausschalten, um über Ihre HTTPS-Adresse aus dem Internet zu empfangen."
         }
+      },
+      "sources": {
+        "title": "Werte aus eigenen PIDs",
+        "data": {
+          "vehicle": "Fahrzeug"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Werte aus eigenen PIDs",
+        "description": "{vehicle}: Liefert das Auto für einen dieser Werte eine falsche Zahl (zum Beispiel eine Batterieladung, die immer 0 ist), wählen Sie eine eigene PID, die ihn richtig liest: Sensor und Fahrtereignisse verwenden dann diese. Lassen Sie ein Feld leer für den Wert der App. Kennt Home Assistant beide Einheiten, wird der Wert umgerechnet.",
+        "data": {
+          "battery_level": "Batterieladung",
+          "fuel_level": "Tankfüllstand",
+          "range": "Reichweite",
+          "odometer": "Kilometerstand",
+          "battery_voltage": "12-V-Batterie",
+          "coolant_temperature": "Kühlmitteltemperatur",
+          "fuel_volume": "Kraftstoff",
+          "speed": "Geschwindigkeit",
+          "engine_speed": "Motordrehzahl"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "Die Einheit dieser eigenen PID passt nicht zu diesem Sensor."
+    },
+    "abort": {
+      "no_custom_pids": "Noch kein Fahrzeug hat eine eigene PID gesendet. Richten Sie eine in der App ein und kommen Sie nach der nächsten Nachricht des Autos zurück."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Letzte Fahrt"
+      },
+      "engine_load": {
+        "name": "Motorlast"
+      },
+      "intake_temperature": {
+        "name": "Ansauglufttemperatur"
+      },
+      "outside_temperature": {
+        "name": "Außentemperatur"
+      },
+      "oil_temperature": {
+        "name": "Öltemperatur"
+      },
+      "accelerator_pedal": {
+        "name": "Gaspedal"
+      },
+      "intake_pressure": {
+        "name": "Saugrohrdruck"
+      },
+      "mass_air_flow": {
+        "name": "Luftmassenstrom"
+      },
+      "fuel_rate": {
+        "name": "Kraftstoffverbrauch pro Stunde"
+      },
+      "timing_advance": {
+        "name": "Zündzeitpunkt"
+      },
+      "short_fuel_trim": {
+        "name": "Kurzzeit-Gemischkorrektur"
+      },
+      "long_fuel_trim": {
+        "name": "Langzeit-Gemischkorrektur"
+      },
+      "barometric_pressure": {
+        "name": "Luftdruck"
+      },
+      "engine_run_time": {
+        "name": "Motorlaufzeit"
+      },
+      "fuel_rail_pressure": {
+        "name": "Raildruck"
+      },
+      "distance_with_mil": {
+        "name": "Strecke mit Motorkontrollleuchte"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Strecke seit Fehlerlöschung"
+      },
+      "torque": {
+        "name": "Drehmoment"
+      },
+      "power": {
+        "name": "Leistung"
+      },
+      "catalyst_temperature": {
+        "name": "Katalysatortemperatur"
+      },
+      "exhaust_temperature": {
+        "name": "Abgastemperatur"
+      },
+      "dpf_temperature": {
+        "name": "DPF-Temperatur"
+      },
+      "dpf_pressure_difference": {
+        "name": "DPF-Differenzdruck"
+      },
+      "dpf_soot_calculated": {
+        "name": "DPF-Ruß (berechnet)"
+      },
+      "dpf_soot_measured": {
+        "name": "DPF-Ruß (gemessen)"
+      },
+      "dpf_load": {
+        "name": "DPF-Beladung"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Strecke seit DPF-Regeneration"
+      },
+      "adblue_level": {
+        "name": "AdBlue-Füllstand"
+      },
+      "gearbox_temperature": {
+        "name": "Getriebetemperatur"
+      },
+      "hv_battery_health": {
+        "name": "HV-Batteriezustand"
+      },
+      "hv_battery_temperature": {
+        "name": "HV-Batterietemperatur"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Zu Hause geparkt"
+      },
+      "dpf_regenerating": {
+        "name": "DPF-Regeneration läuft"
       }
     }
   }

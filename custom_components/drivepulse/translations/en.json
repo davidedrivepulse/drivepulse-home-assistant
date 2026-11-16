@@ -14,13 +14,48 @@
     "step": {
       "init": {
         "description": "Address to paste in the DrivePulse app (“Send to Home Assistant”):\n\n{webhook_url}",
+        "menu_options": {
+          "network": "Network",
+          "sources": "Values from custom PIDs"
+        }
+      },
+      "network": {
+        "title": "Network",
+        "description": "Address to paste in the DrivePulse app (“Send to Home Assistant”):\n\n{webhook_url}",
         "data": {
           "local_only": "Local network only"
         },
         "data_description": {
           "local_only": "Accept the app only from your home network (or a VPN). Turn off to receive from the internet through your HTTPS address."
         }
+      },
+      "sources": {
+        "title": "Values from custom PIDs",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "vehicle_sources": {
+        "title": "Values from custom PIDs",
+        "description": "{vehicle}: if the car gives a wrong number for one of these (for example a battery charge that is always 0), pick a custom PID that reads it right, and the sensor and the trip events use that instead. Leave a field empty for the app's own value. When Home Assistant knows both units, the value is converted.",
+        "data": {
+          "battery_level": "Battery level",
+          "fuel_level": "Fuel level",
+          "range": "Range",
+          "odometer": "Odometer",
+          "battery_voltage": "12 V battery",
+          "coolant_temperature": "Coolant temperature",
+          "fuel_volume": "Fuel",
+          "speed": "Speed",
+          "engine_speed": "Engine speed"
+        }
       }
+    },
+    "error": {
+      "wrong_unit": "The unit of this custom PID does not fit this sensor."
+    },
+    "abort": {
+      "no_custom_pids": "No vehicle has sent a custom PID yet. Set one up in the app, then come back after the next message from the car."
     }
   },
   "entity": {
@@ -57,6 +92,96 @@
       },
       "last_trip_distance": {
         "name": "Last trip"
+      },
+      "engine_load": {
+        "name": "Engine load"
+      },
+      "intake_temperature": {
+        "name": "Intake air temperature"
+      },
+      "outside_temperature": {
+        "name": "Outside temperature"
+      },
+      "oil_temperature": {
+        "name": "Oil temperature"
+      },
+      "accelerator_pedal": {
+        "name": "Accelerator pedal"
+      },
+      "intake_pressure": {
+        "name": "Intake manifold pressure"
+      },
+      "mass_air_flow": {
+        "name": "Mass air flow"
+      },
+      "fuel_rate": {
+        "name": "Fuel rate"
+      },
+      "timing_advance": {
+        "name": "Timing advance"
+      },
+      "short_fuel_trim": {
+        "name": "Short-term fuel trim"
+      },
+      "long_fuel_trim": {
+        "name": "Long-term fuel trim"
+      },
+      "barometric_pressure": {
+        "name": "Barometric pressure"
+      },
+      "engine_run_time": {
+        "name": "Engine run time"
+      },
+      "fuel_rail_pressure": {
+        "name": "Fuel rail pressure"
+      },
+      "distance_with_mil": {
+        "name": "Distance with engine light on"
+      },
+      "distance_since_codes_cleared": {
+        "name": "Distance since codes cleared"
+      },
+      "torque": {
+        "name": "Torque"
+      },
+      "power": {
+        "name": "Power"
+      },
+      "catalyst_temperature": {
+        "name": "Catalyst temperature"
+      },
+      "exhaust_temperature": {
+        "name": "Exhaust gas temperature"
+      },
+      "dpf_temperature": {
+        "name": "DPF temperature"
+      },
+      "dpf_pressure_difference": {
+        "name": "DPF differential pressure"
+      },
+      "dpf_soot_calculated": {
+        "name": "DPF soot (calculated)"
+      },
+      "dpf_soot_measured": {
+        "name": "DPF soot (measured)"
+      },
+      "dpf_load": {
+        "name": "DPF load"
+      },
+      "distance_since_dpf_regeneration": {
+        "name": "Distance since DPF regeneration"
+      },
+      "adblue_level": {
+        "name": "AdBlue level"
+      },
+      "gearbox_temperature": {
+        "name": "Gearbox temperature"
+      },
+      "hv_battery_health": {
+        "name": "HV battery health"
+      },
+      "hv_battery_temperature": {
+        "name": "HV battery temperature"
       }
     },
     "binary_sensor": {
@@ -68,6 +193,9 @@
       },
       "parked_at_home": {
         "name": "Parked at home"
+      },
+      "dpf_regenerating": {
+        "name": "DPF regenerating"
       }
     }
   }

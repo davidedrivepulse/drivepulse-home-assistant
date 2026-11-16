@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Ajouter DrivePulse",
-        "description": "Cela crée une adresse privée (un webhook) à laquelle l'application DrivePulse™ envoie les données de votre voiture. Pas de compte, pas de cloud : les données restent dans votre Home Assistant. Sélectionnez Valider, puis collez l'adresse dans l'application."
+        "description": "Cela crée une adresse privée (un webhook) à laquelle l'application DrivePulse™ envoie les données de votre voiture. Pas de compte, pas de serveur chez nous : l'application envoie les données directement à votre Home Assistant. Sélectionnez Valider, puis collez l'adresse dans l'application."
       }
     },
     "create_entry": {
@@ -26,7 +26,7 @@
           "local_only": "Réseau local uniquement"
         },
         "data_description": {
-          "local_only": "N'accepter l'application que depuis votre réseau domestique (ou un VPN). Désactivez pour recevoir depuis internet via votre adresse HTTPS."
+          "local_only": "N'accepter les données de l'application que depuis votre réseau domestique (ou un VPN). Désactivez pour les recevoir depuis internet via votre adresse HTTPS."
         }
       },
       "sources": {

@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Přidat DrivePulse",
-        "description": "Vytvoří soukromou adresu (webhook), na kterou aplikace DrivePulse™ posílá data vašeho auta. Žádný účet, žádný cloud: data zůstávají ve vašem Home Assistantu. Vyberte Odeslat a vložte adresu do aplikace."
+        "description": "Vytvoří soukromou adresu (webhook), na kterou aplikace DrivePulse™ posílá data vašeho auta. Bez účtu a bez našeho serveru: aplikace posílá data přímo do vašeho Home Assistantu. Vyberte Odeslat a vložte adresu do aplikace."
       }
     },
     "create_entry": {

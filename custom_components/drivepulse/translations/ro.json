@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "Adaugă DrivePulse",
-        "description": "Aceasta creează o adresă privată (un webhook) către care aplicația DrivePulse trimite datele mașinii tale. Fără cont, fără cloud: datele rămân în Home Assistant. Selectează Trimite, apoi lipește adresa în aplicație."
+        "description": "Aceasta creează o adresă privată (un webhook) către care aplicația DrivePulse™ trimite datele mașinii tale. Fără cont, fără cloud: datele rămân în Home Assistant. Selectează Trimite, apoi lipește adresa în aplicație."
       }
     },
     "create_entry": {
-      "default": "DrivePulse este gata. În aplicație deschide „Trimite către Home Assistant”, lipește această adresă la „Adresa webhookului” și atinge „Trimitere de probă”:\n\n{webhook_url}\n\nCând ești plecat, folosește adresa HTTPS a Home Assistant (de exemplu Nabu Casa) sau un VPN și dezactivează „Doar rețea locală” în opțiunile integrării."
+      "default": "DrivePulse™ este gata. În aplicație deschide „Trimite către Home Assistant”, lipește această adresă la „Adresa webhookului” și atinge „Trimitere de probă”:\n\n{webhook_url}\n\nCând nu ești acasă, folosește adresa HTTPS a serverului tău Home Assistant (de exemplu Nabu Casa) sau un VPN și dezactivează „Doar rețea locală” în opțiunile integrării."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Adresa de lipit în aplicația DrivePulse („Trimite către Home Assistant”):\n\n{webhook_url}",
+        "description": "Adresa de lipit în aplicația DrivePulse™ („Trimite către Home Assistant”):\n\n{webhook_url}",
         "menu_options": {
           "network": "Rețea",
           "sources": "Valori din PID-uri personalizate"
@@ -21,12 +21,12 @@
       },
       "network": {
         "title": "Rețea",
-        "description": "Adresa de lipit în aplicația DrivePulse („Trimite către Home Assistant”):\n\n{webhook_url}",
+        "description": "Adresa de lipit în aplicația DrivePulse™ („Trimite către Home Assistant”):\n\n{webhook_url}",
         "data": {
           "local_only": "Doar rețea locală"
         },
         "data_description": {
-          "local_only": "Acceptă aplicația doar din rețeaua de acasă (sau printr-un VPN). Dezactivează pentru a primi de pe internet prin adresa ta HTTPS."
+          "local_only": "Acceptă datele aplicației doar din rețeaua de acasă (sau printr-un VPN). Dezactivează opțiunea ca să le primești de pe internet, prin adresa ta HTTPS."
         }
       },
       "sources": {
@@ -37,7 +37,7 @@
       },
       "vehicle_sources": {
         "title": "Valori din PID-uri personalizate",
-        "description": "{vehicle}: dacă mașina dă un număr greșit pentru una dintre aceste valori (de exemplu o încărcare a bateriei mereu 0), alege un PID personalizat care o citește corect: senzorul și evenimentele călătoriei îl vor folosi pe acesta. Lasă un câmp gol pentru valoarea aplicației. Dacă Home Assistant cunoaște ambele unități, valoarea este convertită.",
+        "description": "{vehicle}: dacă mașina dă un număr greșit pentru una dintre aceste valori (de exemplu un nivel de încărcare a bateriei mereu 0), alege un PID personalizat care o citește corect: senzorul și evenimentele călătoriei îl vor folosi pe acesta. Lasă câmpul gol ca să rămână valoarea aplicației. Dacă Home Assistant cunoaște ambele unități, valoarea este convertită.",
         "data": {
           "battery_level": "Nivel baterie",
           "fuel_level": "Nivel combustibil",
@@ -124,10 +124,10 @@
         "name": "Pedala de accelerație"
       },
       "intake_pressure": {
-        "name": "Presiunea din galerie"
+        "name": "Presiunea din galeria de admisie"
       },
       "mass_air_flow": {
-        "name": "Debit de aer"
+        "name": "Debit masic de aer"
       },
       "fuel_rate": {
         "name": "Consum pe oră"

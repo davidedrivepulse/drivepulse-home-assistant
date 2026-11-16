@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "DrivePulse hozzáadása",
-        "description": "Ez létrehoz egy privát címet (webhookot), amelyre a DrivePulse alkalmazás küldi az autó adatait. Nincs fiók, nincs felhő: az adatok a Home Assistantban maradnak. Válassza a Küldés gombot, majd illessze be a címet az alkalmazásba."
+        "description": "Ez létrehoz egy privát címet (webhookot), amelyre a DrivePulse™ alkalmazás küldi az autó adatait. Nincs fiók, nincs felhő: az adatok a Home Assistantban maradnak. Válassza a Küldés gombot, majd illessze be a címet az alkalmazásba."
       }
     },
     "create_entry": {
-      "default": "A DrivePulse kész. Az alkalmazásban nyissa meg a „Küldés a Home Assistantnak” menüt, illessze be ezt a címet a „Webhook címe” mezőbe, és koppintson a „Próbaküldés” gombra:\n\n{webhook_url}\n\nOtthonon kívül használja a Home Assistant HTTPS címét (például Nabu Casa) vagy VPN-t, és kapcsolja ki az „Csak helyi hálózat” beállítást az integráció beállításaiban."
+      "default": "A DrivePulse™ kész. Az alkalmazásban nyissa meg a „Küldés a Home Assistantnak” menüt, illessze be ezt a címet a „Webhook címe” mezőbe, és koppintson a „Próbaküldés” gombra:\n\n{webhook_url}\n\nOtthonon kívül használja a Home Assistant HTTPS címét (például Nabu Casa) vagy VPN-t, és kapcsolja ki a „Csak helyi hálózat” beállítást az integráció beállításaiban."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "A DrivePulse alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
+        "description": "A DrivePulse™ alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
         "menu_options": {
           "network": "Hálózat",
           "sources": "Értékek egyéni PID-ekből"
@@ -21,12 +21,12 @@
       },
       "network": {
         "title": "Hálózat",
-        "description": "A DrivePulse alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
+        "description": "A DrivePulse™ alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
         "data": {
           "local_only": "Csak helyi hálózat"
         },
         "data_description": {
-          "local_only": "Az alkalmazást csak az otthoni hálózatról (vagy VPN-ről) fogadja el. Kapcsolja ki, ha az internetről, a HTTPS címen keresztül akar adatot kapni."
+          "local_only": "Az alkalmazás adatait csak az otthoni hálózatról (vagy VPN-en keresztül) fogadja. Kapcsolja ki, ha az internetről, a HTTPS-címén keresztül is szeretne adatot kapni."
         }
       },
       "sources": {
@@ -37,7 +37,7 @@
       },
       "vehicle_sources": {
         "title": "Értékek egyéni PID-ekből",
-        "description": "{vehicle}: ha az autó ezek közül valamelyikre rossz számot ad (például az akkumulátor töltöttsége mindig 0), válasszon egy egyéni PID-et, amely helyesen olvassa: az érzékelő és az út eseményei azt használják. Hagyja üresen a mezőt az alkalmazás saját értékéhez. Ha a Home Assistant mindkét mértékegységet ismeri, az értéket átváltja.",
+        "description": "{vehicle}: ha az autó ezek közül valamelyikre rossz számot ad (például az akkumulátor töltöttsége mindig 0), válasszon egy egyéni PID-et, amely helyesen olvassa, és az érzékelő meg az út eseményei azt fogják használni. Ha a mezőt üresen hagyja, az alkalmazás saját értéke marad. Ha a Home Assistant mindkét mértékegységet ismeri, átváltja az értéket.",
         "data": {
           "battery_level": "Akkumulátorszint",
           "fuel_level": "Üzemanyagszint",
@@ -47,7 +47,7 @@
           "coolant_temperature": "Hűtőfolyadék hőmérséklete",
           "fuel_volume": "Üzemanyag",
           "speed": "Sebesség",
-          "engine_speed": "Motorfordúlatszám"
+          "engine_speed": "Motorfordulatszám"
         }
       }
     },
@@ -88,7 +88,7 @@
         "name": "Sebesség"
       },
       "engine_speed": {
-        "name": "Motorfordúlatszám"
+        "name": "Motorfordulatszám"
       },
       "last_trip_distance": {
         "name": "Utolsó út"
@@ -127,7 +127,7 @@
         "name": "Szívócsőnyomás"
       },
       "mass_air_flow": {
-        "name": "Légtömegmérő"
+        "name": "Légtömegáram"
       },
       "fuel_rate": {
         "name": "Óránkénti fogyasztás"
@@ -169,25 +169,25 @@
         "name": "Kipufogógáz hőmérséklete"
       },
       "dpf_temperature": {
-        "name": "DPF hőmérséklet"
+        "name": "DPF-hőmérséklet"
       },
       "dpf_pressure_difference": {
-        "name": "DPF nyomáskülönbség"
+        "name": "DPF-nyomáskülönbség"
       },
       "dpf_soot_calculated": {
-        "name": "DPF korom (számított)"
+        "name": "DPF-korom (számított)"
       },
       "dpf_soot_measured": {
-        "name": "DPF korom (mért)"
+        "name": "DPF-korom (mért)"
       },
       "dpf_load": {
-        "name": "DPF telítettség"
+        "name": "DPF-telítettség"
       },
       "distance_since_dpf_regeneration": {
-        "name": "Megtett táv a DPF regenerálás óta"
+        "name": "Megtett táv a DPF-regenerálás óta"
       },
       "adblue_level": {
-        "name": "AdBlue szint"
+        "name": "AdBlue-szint"
       },
       "gearbox_temperature": {
         "name": "Váltó hőmérséklete"
@@ -210,7 +210,7 @@
         "name": "Otthon parkol"
       },
       "dpf_regenerating": {
-        "name": "DPF regenerálás folyamatban"
+        "name": "DPF-regenerálás folyamatban"
       }
     }
   }

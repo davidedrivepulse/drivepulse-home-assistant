@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "Añadir DrivePulse",
-        "description": "Esto crea una dirección privada (un webhook) a la que la app DrivePulse envía los datos de tu coche. Sin cuenta, sin nube: los datos se quedan en tu Home Assistant. Pulsa Enviar y pega la dirección en la app."
+        "description": "Esto crea una dirección privada (un webhook) a la que la app DrivePulse™ envía los datos de tu coche. Sin cuenta, sin nube: los datos se quedan en tu Home Assistant. Pulsa Enviar y pega la dirección en la app."
       }
     },
     "create_entry": {
-      "default": "DrivePulse está listo. En la app abre «Enviar a Home Assistant», pega esta dirección en «Dirección del webhook» y toca «Probar envío»:\n\n{webhook_url}\n\nFuera de casa usa la dirección HTTPS de tu Home Assistant (por ejemplo Nabu Casa) o una VPN, y desactiva «Solo red local» en las opciones de la integración."
+      "default": "DrivePulse™ está listo. En la app abre «Enviar a Home Assistant», pega esta dirección en «Dirección del webhook» y toca «Probar envío»:\n\n{webhook_url}\n\nFuera de casa usa la dirección HTTPS de tu Home Assistant (por ejemplo Nabu Casa) o una VPN, y desactiva «Solo red local» en las opciones de la integración."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Dirección para pegar en la app DrivePulse («Enviar a Home Assistant»):\n\n{webhook_url}",
+        "description": "Dirección para pegar en la app DrivePulse™ («Enviar a Home Assistant»):\n\n{webhook_url}",
         "menu_options": {
           "network": "Red",
           "sources": "Valores de PID personalizados"
@@ -21,7 +21,7 @@
       },
       "network": {
         "title": "Red",
-        "description": "Dirección para pegar en la app DrivePulse («Enviar a Home Assistant»):\n\n{webhook_url}",
+        "description": "Dirección para pegar en la app DrivePulse™ («Enviar a Home Assistant»):\n\n{webhook_url}",
         "data": {
           "local_only": "Solo red local"
         },

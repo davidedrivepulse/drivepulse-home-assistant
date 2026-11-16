@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "Ajouter DrivePulse",
-        "description": "Cela crée une adresse privée (un webhook) à laquelle l'application DrivePulse envoie les données de votre voiture. Pas de compte, pas de cloud : les données restent dans votre Home Assistant. Sélectionnez Valider, puis collez l'adresse dans l'application."
+        "description": "Cela crée une adresse privée (un webhook) à laquelle l'application DrivePulse™ envoie les données de votre voiture. Pas de compte, pas de cloud : les données restent dans votre Home Assistant. Sélectionnez Valider, puis collez l'adresse dans l'application."
       }
     },
     "create_entry": {
-      "default": "DrivePulse est prêt. Dans l'application, ouvrez « Envoyer à Home Assistant », collez cette adresse dans « Adresse du webhook » et touchez « Tester l’envoi » :\n\n{webhook_url}\n\nHors de chez vous, utilisez l'adresse HTTPS de votre Home Assistant (par exemple Nabu Casa) ou un VPN, et désactivez « Réseau local uniquement » dans les options de l'intégration."
+      "default": "DrivePulse™ est prêt. Dans l'application, ouvrez « Envoyer à Home Assistant », collez cette adresse dans « Adresse du webhook » et touchez « Tester l’envoi » :\n\n{webhook_url}\n\nHors de chez vous, utilisez l'adresse HTTPS de votre Home Assistant (par exemple Nabu Casa) ou un VPN, et désactivez « Réseau local uniquement » dans les options de l'intégration."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Adresse à coller dans l'application DrivePulse (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
+        "description": "Adresse à coller dans l'application DrivePulse™ (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
         "menu_options": {
           "network": "Réseau",
           "sources": "Valeurs des PID personnalisés"
@@ -21,7 +21,7 @@
       },
       "network": {
         "title": "Réseau",
-        "description": "Adresse à coller dans l'application DrivePulse (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
+        "description": "Adresse à coller dans l'application DrivePulse™ (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
         "data": {
           "local_only": "Réseau local uniquement"
         },

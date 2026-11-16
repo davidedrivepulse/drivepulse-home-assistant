@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "Přidat DrivePulse",
-        "description": "Vytvoří soukromou adresu (webhook), na kterou aplikace DrivePulse posílá data vašeho auta. Žádný účet, žádný cloud: data zůstávají ve vašem Home Assistantu. Vyberte Odeslat a vložte adresu do aplikace."
+        "description": "Vytvoří soukromou adresu (webhook), na kterou aplikace DrivePulse™ posílá data vašeho auta. Žádný účet, žádný cloud: data zůstávají ve vašem Home Assistantu. Vyberte Odeslat a vložte adresu do aplikace."
       }
     },
     "create_entry": {
-      "default": "DrivePulse je připraven. V aplikaci otevřete „Odesílat do Home Assistant“, vložte tuto adresu do „Adresa webhooku“ a klepněte na „Zkušební odeslání“:\n\n{webhook_url}\n\nMimo domov použijte HTTPS adresu svého Home Assistantu (např. Nabu Casa) nebo VPN a v možnostech integrace vypněte „Jen místní síť“."
+      "default": "DrivePulse™ je připraven. V aplikaci otevřete „Odesílat do Home Assistant“, vložte tuto adresu do pole „Adresa webhooku“ a klepněte na „Zkušební odeslání“:\n\n{webhook_url}\n\nMimo domov použijte HTTPS adresu svého Home Assistantu (např. Nabu Casa) nebo VPN a v možnostech integrace vypněte „Jen místní síť“."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Adresa k vložení do aplikace DrivePulse („Odesílat do Home Assistant“):\n\n{webhook_url}",
+        "description": "Adresa k vložení do aplikace DrivePulse™ („Odesílat do Home Assistant“):\n\n{webhook_url}",
         "menu_options": {
           "network": "Síť",
           "sources": "Hodnoty z vlastních PID"
@@ -21,12 +21,12 @@
       },
       "network": {
         "title": "Síť",
-        "description": "Adresa k vložení do aplikace DrivePulse („Odesílat do Home Assistant“):\n\n{webhook_url}",
+        "description": "Adresa k vložení do aplikace DrivePulse™ („Odesílat do Home Assistant“):\n\n{webhook_url}",
         "data": {
           "local_only": "Jen místní síť"
         },
         "data_description": {
-          "local_only": "Přijímat aplikaci jen z domovské sítě (nebo přes VPN). Vypněte pro příjem z internetu přes vaši HTTPS adresu."
+          "local_only": "Přijímat data z aplikace jen z domácí sítě (nebo přes VPN). Vypněte, pokud chcete data přijímat z internetu přes svou HTTPS adresu."
         }
       },
       "sources": {
@@ -37,9 +37,9 @@
       },
       "vehicle_sources": {
         "title": "Hodnoty z vlastních PID",
-        "description": "{vehicle}: pokud auto u některé z těchto hodnot posílá špatné číslo (například nabití baterie stále 0), vyberte vlastní PID, který ji čte správně: senzor i události jízdy pak použijí ten. Pole nechte prázdné pro hodnotu z aplikace. Pokud Home Assistant zná obě jednotky, hodnota se převede.",
+        "description": "{vehicle}: pokud auto u některé z těchto hodnot posílá špatné číslo (například nabití baterie stále 0), vyberte vlastní PID, který ji čte správně; senzor i události jízdy pak použijí jeho hodnotu. Když pole necháte prázdné, použije se hodnota z aplikace. Pokud Home Assistant zná obě jednotky, hodnota se převede.",
         "data": {
-          "battery_level": "Stav baterie",
+          "battery_level": "Nabití baterie",
           "fuel_level": "Hladina paliva",
           "range": "Dojezd",
           "odometer": "Počítadlo kilometrů",
@@ -64,7 +64,7 @@
         "name": "Hladina paliva"
       },
       "battery_level": {
-        "name": "Stav baterie"
+        "name": "Nabití baterie"
       },
       "range": {
         "name": "Dojezd"
@@ -100,7 +100,7 @@
         "name": "Průměrná rychlost poslední jízdy"
       },
       "last_trip_max_speed": {
-        "name": "Nejvyšší rychlost poslední jízdy"
+        "name": "Maximální rychlost poslední jízdy"
       },
       "last_trip_consumption": {
         "name": "Průměrná spotřeba poslední jízdy"
@@ -151,7 +151,7 @@
         "name": "Tlak v rozdělovači paliva"
       },
       "distance_with_mil": {
-        "name": "Vzdálenost s kontrolkou motoru"
+        "name": "Vzdálenost s rozsvícenou kontrolkou motoru"
       },
       "distance_since_codes_cleared": {
         "name": "Vzdálenost od vymazání kódů"

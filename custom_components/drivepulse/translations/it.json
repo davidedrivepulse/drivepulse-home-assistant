@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "Aggiungi DrivePulse",
-        "description": "Crea un indirizzo privato (un webhook) a cui l'app DrivePulse manda i dati della tua auto. Nessun account, nessun cloud: i dati restano nel tuo Home Assistant. Premi Invia, poi incolla l'indirizzo nell'app."
+        "description": "Crea un indirizzo privato (un webhook) a cui l'app DrivePulse™ manda i dati della tua auto. Nessun account, nessun cloud: i dati restano nel tuo Home Assistant. Premi Invia, poi incolla l'indirizzo nell'app."
       }
     },
     "create_entry": {
-      "default": "DrivePulse è pronto. Nell'app apri “Invia a Home Assistant”, incolla questo indirizzo in “Indirizzo del webhook” e tocca “Prova invio”:\n\n{webhook_url}\n\nFuori casa usa l'indirizzo HTTPS del tuo Home Assistant (per esempio Nabu Casa) o una VPN, e disattiva “Solo rete locale” nelle opzioni dell'integrazione."
+      "default": "DrivePulse™ è pronto. Nell'app apri “Invia a Home Assistant”, incolla questo indirizzo in “Indirizzo del webhook” e tocca “Prova invio”:\n\n{webhook_url}\n\nFuori casa usa l'indirizzo HTTPS del tuo Home Assistant (per esempio Nabu Casa) o una VPN, e disattiva “Solo rete locale” nelle opzioni dell'integrazione."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Indirizzo da incollare nell'app DrivePulse (“Invia a Home Assistant”):\n\n{webhook_url}",
+        "description": "Indirizzo da incollare nell'app DrivePulse™ (“Invia a Home Assistant”):\n\n{webhook_url}",
         "menu_options": {
           "network": "Rete",
           "sources": "Valori dai PID personalizzati"
@@ -21,7 +21,7 @@
       },
       "network": {
         "title": "Rete",
-        "description": "Indirizzo da incollare nell'app DrivePulse (“Invia a Home Assistant”):\n\n{webhook_url}",
+        "description": "Indirizzo da incollare nell'app DrivePulse™ (“Invia a Home Assistant”):\n\n{webhook_url}",
         "data": {
           "local_only": "Solo rete locale"
         },

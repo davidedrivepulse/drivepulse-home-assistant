@@ -3,25 +3,25 @@
     "step": {
       "user": {
         "title": "Adicionar DrivePulse",
-        "description": "Isto cria um endereço privado (um webhook) para onde a app DrivePulse envia os dados do seu carro. Sem conta, sem nuvem: os dados ficam no seu Home Assistant. Selecione Submeter e cole o endereço na app."
+        "description": "Isto cria um endereço privado (um webhook) para onde a app DrivePulse™ envia os dados do seu carro. Sem conta, sem nuvem: os dados ficam no seu Home Assistant. Selecione Submeter e cole o endereço na app."
       }
     },
     "create_entry": {
-      "default": "O DrivePulse está pronto. Na app abra “Enviar para o Home Assistant”, cole este endereço em “Endereço do webhook” e toque em “Testar envio”:\n\n{webhook_url}\n\nFora de casa, use o endereço HTTPS do seu Home Assistant (por exemplo Nabu Casa) ou uma VPN e desative “Apenas rede local” nas opções da integração."
+      "default": "O DrivePulse™ está pronto. Na app abra “Enviar para o Home Assistant”, cole este endereço em “Endereço do webhook” e toque em “Testar envio”:\n\n{webhook_url}\n\nFora de casa, use o endereço HTTPS do seu Home Assistant (por exemplo Nabu Casa) ou uma VPN e desative “Apenas rede local” nas opções da integração."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Endereço a colar na app DrivePulse (“Enviar para o Home Assistant”):\n\n{webhook_url}",
+        "description": "Endereço a colar na app DrivePulse™ (“Enviar para o Home Assistant”):\n\n{webhook_url}",
         "menu_options": {
           "network": "Rede",
-          "sources": "Valores de PIDs personalizados"
+          "sources": "Valores de PID personalizados"
         }
       },
       "network": {
         "title": "Rede",
-        "description": "Endereço a colar na app DrivePulse (“Enviar para o Home Assistant”):\n\n{webhook_url}",
+        "description": "Endereço a colar na app DrivePulse™ (“Enviar para o Home Assistant”):\n\n{webhook_url}",
         "data": {
           "local_only": "Apenas rede local"
         },
@@ -30,13 +30,13 @@
         }
       },
       "sources": {
-        "title": "Valores de PIDs personalizados",
+        "title": "Valores de PID personalizados",
         "data": {
           "vehicle": "Veículo"
         }
       },
       "vehicle_sources": {
-        "title": "Valores de PIDs personalizados",
+        "title": "Valores de PID personalizados",
         "description": "{vehicle}: se o carro dá um número errado para algum destes valores (por exemplo uma carga da bateria sempre a 0), escolha um PID personalizado que o leia bem: o sensor e os eventos da viagem usarão esse. Deixe um campo vazio para o valor da app. Se o Home Assistant conhecer as duas unidades, o valor é convertido.",
         "data": {
           "battery_level": "Nível da bateria",

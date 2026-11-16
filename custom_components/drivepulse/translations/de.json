@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "DrivePulse hinzufügen",
-        "description": "Das erzeugt eine private Adresse (einen Webhook), an die die DrivePulse-App die Fahrzeugdaten sendet. Kein Konto, keine Cloud: Die Daten bleiben in Ihrem Home Assistant. Wählen Sie „Absenden“ und fügen Sie die Adresse dann in der App ein."
+        "description": "Das erzeugt eine private Adresse (einen Webhook), an die die DrivePulse™-App die Fahrzeugdaten sendet. Kein Konto, keine Cloud: Die Daten bleiben in Ihrem Home Assistant. Wählen Sie „Absenden“ und fügen Sie die Adresse dann in der App ein."
       }
     },
     "create_entry": {
-      "default": "DrivePulse ist bereit. Öffnen Sie in der App „An Home Assistant senden“, fügen Sie diese Adresse bei „Webhook-Adresse“ ein und tippen Sie auf „Testsendung“:\n\n{webhook_url}\n\nUnterwegs nutzen Sie die HTTPS-Adresse Ihres Home Assistant (z. B. Nabu Casa) oder ein VPN und schalten Sie in den Integrationsoptionen „Nur lokales Netzwerk“ aus."
+      "default": "DrivePulse™ ist bereit. Öffnen Sie in der App „An Home Assistant senden“, fügen Sie diese Adresse bei „Webhook-Adresse“ ein und tippen Sie auf „Testsendung“:\n\n{webhook_url}\n\nUnterwegs nutzen Sie die HTTPS-Adresse Ihres Home Assistant (z. B. Nabu Casa) oder ein VPN und schalten Sie in den Integrationsoptionen „Nur lokales Netzwerk“ aus."
     }
   },
   "options": {
     "step": {
       "init": {
-        "description": "Adresse für die DrivePulse-App („An Home Assistant senden“):\n\n{webhook_url}",
+        "description": "Adresse für die DrivePulse™-App („An Home Assistant senden“):\n\n{webhook_url}",
         "menu_options": {
           "network": "Netzwerk",
           "sources": "Werte aus eigenen PIDs"
@@ -21,7 +21,7 @@
       },
       "network": {
         "title": "Netzwerk",
-        "description": "Adresse für die DrivePulse-App („An Home Assistant senden“):\n\n{webhook_url}",
+        "description": "Adresse für die DrivePulse™-App („An Home Assistant senden“):\n\n{webhook_url}",
         "data": {
           "local_only": "Nur lokales Netzwerk"
         },

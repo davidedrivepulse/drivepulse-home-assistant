@@ -93,6 +93,21 @@
       "last_trip_distance": {
         "name": "Poslední jízda"
       },
+      "last_trip_duration": {
+        "name": "Doba poslední jízdy"
+      },
+      "last_trip_average_speed": {
+        "name": "Průměrná rychlost poslední jízdy"
+      },
+      "last_trip_max_speed": {
+        "name": "Nejvyšší rychlost poslední jízdy"
+      },
+      "last_trip_consumption": {
+        "name": "Průměrná spotřeba poslední jízdy"
+      },
+      "last_trip_electric_consumption": {
+        "name": "Průměrná spotřeba elektřiny poslední jízdy"
+      },
       "engine_load": {
         "name": "Zatížení motoru"
       },

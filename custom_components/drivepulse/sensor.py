@@ -185,6 +185,62 @@ LAST_TRIP_DESCRIPTION = SensorEntityDescription(
 )
 
 
+def _trip_value(
+    key: str,
+    unit: str,
+    device_class: SensorDeviceClass | None = None,
+    precision: int = 1,
+) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        device_class=device_class,
+        native_unit_of_measurement=unit,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=precision,
+    )
+
+
+# Numbers of the last finished trip as their own entities, so they have a
+# unit and a history: sensor key -> (trip field, description). The same
+# numbers stay in the attributes of Last trip.
+TRIP_VALUES: dict[str, tuple[str, SensorEntityDescription]] = {
+    "last_trip_duration": (
+        "duration_min",
+        _trip_value(
+            "last_trip_duration", UnitOfTime.MINUTES, SensorDeviceClass.DURATION, 0
+        ),
+    ),
+    "last_trip_average_speed": (
+        "avg_speed_kmh",
+        _trip_value(
+            "last_trip_average_speed",
+            UnitOfSpeed.KILOMETERS_PER_HOUR,
+            SensorDeviceClass.SPEED,
+        ),
+    ),
+    "last_trip_max_speed": (
+        "max_speed_kmh",
+        _trip_value(
+            "last_trip_max_speed",
+            UnitOfSpeed.KILOMETERS_PER_HOUR,
+            SensorDeviceClass.SPEED,
+        ),
+    ),
+    # No device class: the ones for consumption need a newer Home Assistant.
+    "last_trip_consumption": (
+        "avg_consumption_l_100km",
+        _trip_value("last_trip_consumption", "L/100km"),
+    ),
+    "last_trip_electric_consumption": (
+        "avg_consumption_kwh_100km",
+        _trip_value("last_trip_electric_consumption", "kWh/100km"),
+    ),
+}
+# Every vehicle gets these; the two consumptions appear with their first number.
+TRIP_ALWAYS = ("last_trip_duration", "last_trip_average_speed", "last_trip_max_speed")
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: DrivePulseConfigEntry,
@@ -195,6 +251,12 @@ async def async_setup_entry(
 
     def vehicle_entities(vehicle: Vehicle) -> list[DrivePulseSensor]:
         found: list[DrivePulseSensor] = [DrivePulseLastTrip(hub, vehicle)]
+        found += [DrivePulseTripValue(hub, vehicle, key) for key in TRIP_ALWAYS]
+        found += [
+            DrivePulseTripValue(hub, vehicle, key)
+            for key in sorted(vehicle.keys)
+            if key in TRIP_VALUES and key not in TRIP_ALWAYS
+        ]
         found += [
             DrivePulseSensor(hub, vehicle, DESCRIPTIONS[key])
             for key in sorted(vehicle.keys)
@@ -215,6 +277,8 @@ async def async_setup_entry(
         """A sensor that appears when the car first sends its number."""
         if key in DESCRIPTIONS:
             async_add_entities([DrivePulseSensor(hub, vehicle, DESCRIPTIONS[key])])
+        elif key in TRIP_VALUES:
+            async_add_entities([DrivePulseTripValue(hub, vehicle, key)])
 
     hub.listen_new_key(optional_sensor)
 
@@ -277,6 +341,26 @@ class DrivePulseLastTrip(DrivePulseSensor):
     def extra_state_attributes(self) -> dict[str, Any] | None:
         trip = self._vehicle.last_trip
         return {k: v for k, v in trip.items() if k != "distance_km"} if trip else None
+
+
+class DrivePulseTripValue(DrivePulseSensor):
+    """One number of the last finished trip."""
+
+    def __init__(self, hub: DrivePulseHub, vehicle: Vehicle, key: str) -> None:
+        self._field, description = TRIP_VALUES[key]
+        super().__init__(hub, vehicle, description)
+
+    @property
+    def native_value(self) -> float | int | None:
+        trip = self._vehicle.last_trip
+        value = trip.get(self._field) if trip else None
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return None
+        return value
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        return None
 
 
 class DrivePulseCustomSensor(DrivePulseEntity, SensorEntity):

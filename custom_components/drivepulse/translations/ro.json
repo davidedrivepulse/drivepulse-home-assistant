@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Adaugă DrivePulse",
-        "description": "Aceasta creează o adresă privată (un webhook) către care aplicația DrivePulse™ trimite datele mașinii tale. Fără cont, fără cloud: datele rămân în Home Assistant. Selectează Trimite, apoi lipește adresa în aplicație."
+        "description": "Aceasta creează o adresă privată (un webhook) către care aplicația DrivePulse™ trimite datele mașinii tale. Fără cont și fără vreun server al nostru: aplicația trimite datele direct către Home Assistant. Selectează Trimite, apoi lipește adresa în aplicație."
       }
     },
     "create_entry": {

@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "DrivePulse hozzáadása",
-        "description": "Ez létrehoz egy privát címet (webhookot), amelyre a DrivePulse™ alkalmazás küldi az autó adatait. Nincs fiók, nincs felhő: az adatok a Home Assistantban maradnak. Válassza a Küldés gombot, majd illessze be a címet az alkalmazásba."
+        "description": "Ez létrehoz egy privát címet (webhookot), amelyre a DrivePulse™ alkalmazás küldi az autó adatait. Fiók és a mi szerverünk nélkül: az alkalmazás közvetlenül a Home Assistantba küldi az adatokat. Válassza a Küldés gombot, majd illessze be a címet az alkalmazásba."
       }
     },
     "create_entry": {

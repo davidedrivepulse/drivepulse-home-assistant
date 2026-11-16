@@ -93,6 +93,21 @@
       "last_trip_distance": {
         "name": "Utolsó út"
       },
+      "last_trip_duration": {
+        "name": "Utolsó út időtartama"
+      },
+      "last_trip_average_speed": {
+        "name": "Utolsó út átlagsebessége"
+      },
+      "last_trip_max_speed": {
+        "name": "Utolsó út legnagyobb sebessége"
+      },
+      "last_trip_consumption": {
+        "name": "Utolsó út átlagfogyasztása"
+      },
+      "last_trip_electric_consumption": {
+        "name": "Utolsó út átlagos áramfogyasztása"
+      },
       "engine_load": {
         "name": "Motorterhelés"
       },

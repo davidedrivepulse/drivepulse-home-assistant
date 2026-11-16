@@ -93,6 +93,21 @@
       "last_trip_distance": {
         "name": "Ultimo viaggio"
       },
+      "last_trip_duration": {
+        "name": "Durata ultimo viaggio"
+      },
+      "last_trip_average_speed": {
+        "name": "Velocità media ultimo viaggio"
+      },
+      "last_trip_max_speed": {
+        "name": "Velocità massima ultimo viaggio"
+      },
+      "last_trip_consumption": {
+        "name": "Consumo medio ultimo viaggio"
+      },
+      "last_trip_electric_consumption": {
+        "name": "Consumo elettrico medio ultimo viaggio"
+      },
       "engine_load": {
         "name": "Carico motore"
       },

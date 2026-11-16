@@ -21,6 +21,7 @@ For each vehicle (named as in the app) one device, **without the VIN** (the app 
 | Coolant temperature | Engine coolant |
 | Trouble codes | Number of fault codes; the codes themselves (for example `P0420`) are in the `codes` attribute |
 | Last trip | Distance of the last trip. Duration, average and maximum speed, consumption are attributes |
+| Last trip duration, average speed, maximum speed, average consumption | The same numbers of the last trip as their own sensors, with a unit and a history. The consumption appears with the first trip that has it: litres per 100 km, or kWh per 100 km for an electric car |
 | Trip in progress | On from the start of a trip to its end. A false start that the app drops (fewer than 5 GPS points) turns it off again, without a `drivepulse_trip_end` |
 | Adapter connected | Whether the app is talking to the car right now |
 | Parked at home | Whether the last trip ended inside a Home place saved for this car in the app. It appears after the first trip with **Car at home at trip end** switched on in the app (off by default). **Unknown** when the app cannot say: no Home place for this car, or GPS lost before the car stopped. During a trip it keeps the last value: **Trip in progress** tells you the car is moving |
@@ -40,9 +41,11 @@ These events are fired on the Home Assistant bus, so you can automate "the car l
 
 | Event | When | Data |
 |---|---|---|
-| `drivepulse_trip_start` | a trip starts | `vehicle`, `device_id`, `fuel_level_pct`, `odometer_km`, `battery_voltage`, ... |
+| `drivepulse_trip_start` | a trip starts | `vehicle`, `device_id`, `sent_at`, `obd_at`, `fuel_level_pct`, `odometer_km`, `battery_voltage`, ... |
 | `drivepulse_trip_end` | a trip ends | the same, plus `trip` (distance, duration, average and maximum speed, consumption) |
 | `drivepulse_trip_resent` | you send a saved trip again from the trip's page in the app | `vehicle`, `device_id`, `sent_at`, `trip` |
+
+`sent_at` is when the app sent the message, `obd_at` is when the app last heard from the car: at the end of a trip, with the engine already off, it can be older than `sent_at`, and it is `null` if the car never answered.
 
 Both `drivepulse_trip_start` and `drivepulse_trip_end` also carry `custom`: your custom PIDs by their key, for example `custom.cp3` is `{name: Oil, value: 64, unit: °C}`. The key stays the same when you rename the PID (it is the `pid` attribute of the sensor); `value` is `null` when the car did not answer.
 

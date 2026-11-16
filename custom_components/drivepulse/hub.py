@@ -125,6 +125,9 @@ CORE_KEYS = {"battery_voltage", "coolant_temperature", "odometer", "trouble_code
 # position, no VIN, no free text.
 EVENT_FIELDS = (
     "sent_at",
+    # When the app last heard from the car: with a trip_end sent after the
+    # engine is off it is older than sent_at, and null if the car never spoke.
+    "obd_at",
     "fuel_level_pct",
     "hv_soc_pct",
     "range_km",
@@ -144,6 +147,13 @@ TRIP_FIELDS = (
     "avg_consumption_kwh_100km",
     "odometer_km",
 )
+# Trip field -> sensor key, for the two consumption sensors of the last trip:
+# each appears with the first trip that has its number, so a petrol car never
+# shows an empty electric consumption.
+TRIP_OPTIONAL_KEYS: dict[str, str] = {
+    "avg_consumption_l_100km": "last_trip_consumption",
+    "avg_consumption_kwh_100km": "last_trip_electric_consumption",
+}
 # Read by Parked at home (_at_home), never kept in the last trip summary.
 TRIP_AT_HOME = "ended_at_home"
 
@@ -172,6 +182,15 @@ def _plain(value: Any) -> bool:
 def _trip_summary(trip: dict[str, Any]) -> dict[str, Any]:
     """The trip fields kept and forwarded: no id, no route, nothing unknown."""
     return {key: trip[key] for key in TRIP_FIELDS if key in trip and _plain(trip[key])}
+
+
+def _trip_keys(trip: dict[str, Any] | None) -> set[str]:
+    """The consumption sensors this trip has a number for."""
+    return {
+        key
+        for field, key in TRIP_OPTIONAL_KEYS.items()
+        if _number((trip or {}).get(field)) is not None
+    }
 
 
 def _trip_time(trip: dict[str, Any] | None) -> datetime | None:
@@ -336,6 +355,8 @@ class DrivePulseHub:
         data = await self._store.async_load()
         for item in (data or {}).get("vehicles", []):
             vehicle = Vehicle.from_dict(item)
+            # A last trip stored by a version before these sensors existed.
+            vehicle.keys |= _trip_keys(vehicle.last_trip)
             self.vehicles[vehicle.slug] = vehicle
 
     @callback
@@ -468,6 +489,12 @@ class DrivePulseHub:
                 listener(vehicle, key)
 
     @callback
+    def _set_last_trip(self, vehicle: Vehicle, summary: dict[str, Any]) -> None:
+        vehicle.last_trip = summary
+        for key in sorted(_trip_keys(summary)):
+            self._new_key(vehicle, key)
+
+    @callback
     def _set_number(self, vehicle: Vehicle, key: str, value: Any) -> None:
         number = _number(value)
         if number is None:
@@ -573,7 +600,7 @@ class DrivePulseHub:
             vehicle.in_trip = False
             trip = payload.get("trip")
             if isinstance(trip, dict):
-                vehicle.last_trip = _trip_summary(trip)
+                self._set_last_trip(vehicle, _trip_summary(trip))
                 self._at_home(vehicle, trip)
         if event in (MSG_TRIP_START, MSG_TRIP_END):
             self._fire_trip_event(vehicle, event, payload)
@@ -667,7 +694,7 @@ class DrivePulseHub:
         if not _more_recent(summary, vehicle.last_trip):
             return None
         vehicle.in_trip = False
-        vehicle.last_trip = summary
+        self._set_last_trip(vehicle, summary)
         self._at_home(vehicle, trip)
         self._async_save()
         async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))
@@ -693,7 +720,7 @@ class DrivePulseHub:
             return web.Response(status=400, text="too many vehicles")
         summary = _trip_summary(trip)
         if _more_recent(summary, vehicle.last_trip):
-            vehicle.last_trip = summary
+            self._set_last_trip(vehicle, summary)
             self._at_home(vehicle, trip)
             self._async_save()
             async_dispatcher_send(self.hass, signal(self.entry.entry_id, vehicle.slug))

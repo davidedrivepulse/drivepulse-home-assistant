@@ -93,6 +93,21 @@
       "last_trip_distance": {
         "name": "Ultima călătorie"
       },
+      "last_trip_duration": {
+        "name": "Durata ultimei călătorii"
+      },
+      "last_trip_average_speed": {
+        "name": "Viteza medie a ultimei călătorii"
+      },
+      "last_trip_max_speed": {
+        "name": "Viteza maximă a ultimei călătorii"
+      },
+      "last_trip_consumption": {
+        "name": "Consumul mediu al ultimei călătorii"
+      },
+      "last_trip_electric_consumption": {
+        "name": "Consumul electric mediu al ultimei călătorii"
+      },
       "engine_load": {
         "name": "Sarcină motor"
       },

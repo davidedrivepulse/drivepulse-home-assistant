@@ -244,13 +244,19 @@ The same examples, in English and Italian: [drivepulse.it/home-assistant_en](htt
 
 ## Install
 
-### 1. With HACS
+### 1. From the Marketplace
 
-1. In Home Assistant open **HACS**.
-2. Search for **DrivePulse**, open it and select **Download**.
-3. **Restart Home Assistant.**
+On Home Assistant 2026.11 or later:
 
-DrivePulse is in the HACS default list, so no custom repository is needed. On Home Assistant 2026.11 or later the same catalog is built in as **Settings > Marketplace**: search for DrivePulse there (or use the badge at the top of this page), the steps are the same. If you added it earlier as a custom repository, nothing changes: the installed integration keeps working and keeps receiving updates.
+1. In Home Assistant open **Settings > Marketplace**.
+2. Search for **DrivePulse**, open it and select **Install**.
+3. Home Assistant opens the DrivePulse setup: go on from step 2 below. If it does not open, a repair under **Settings > System > Repairs** tells you when a restart is needed.
+
+DrivePulse is in the Marketplace catalog, so there is no link to add and no GitHub account is needed. The badge at the top of this page opens it in your Home Assistant.
+
+On Home Assistant older than 2026.11 there is no Marketplace: open **HACS**, search for **DrivePulse**, select **Download** and restart Home Assistant.
+
+If you installed it with HACS, nothing changes: Home Assistant moves it to the Marketplace when it updates, and the integration keeps working and keeps receiving updates.
 
 ### 2. Add the integration
 

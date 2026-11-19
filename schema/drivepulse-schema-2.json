@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/davideguida0093/drivepulse-home-assistant/main/schema/drivepulse-schema-2.json",
+  "$id": "https://raw.githubusercontent.com/davidedrivepulse/drivepulse-home-assistant/main/schema/drivepulse-schema-2.json",
   "title": "DrivePulse webhook message, schema 2",
   "description": "The JSON body the DrivePulse app POSTs to a webhook (Home Assistant or any other receiver). Every key below is always present, with null when the car did not give that value, except `custom` (sent from app 3.5.9) and `trip` (only with `trip_end` and `trip_resend`). Units are always metric. The message never carries a GPS position, an address or the VIN. A newer app can add keys, here, in `extended` and in `trip`: ignore the ones you do not know. None of them will ever be a position, an address or the VIN.",
   "type": "object",

@@ -268,3 +268,14 @@ def test_the_app_sends_the_car_reading_and_the_estimate_apart() -> None:
         assert message["odometer_km"] != message["odometer_estimated_km"] or (
             message["odometer_km"] is None
         )
+
+
+def test_schema_2_points_at_this_repository() -> None:
+    # Schema 1 is already published with the old address and stays as it is.
+    manifest = json.loads(
+        (ROOT / "custom_components/drivepulse/manifest.json").read_text(encoding="utf-8")
+    )
+    repo = manifest["documentation"].removeprefix("https://github.com/")
+    assert SCHEMA["$id"] == (
+        f"https://raw.githubusercontent.com/{repo}/main/schema/drivepulse-schema-2.json"
+    )

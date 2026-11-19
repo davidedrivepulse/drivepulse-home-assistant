@@ -41,12 +41,17 @@ _LOGGER = logging.getLogger(__name__)
 
 STORE_VERSION = 1
 
-# Webhook key -> sensor key. The webhook keys are the fixed schema 1 names.
+# Webhook key -> sensor key. The webhook keys are the fixed schema names.
 NUMERIC_KEYS: dict[str, str] = {
     "fuel_level_pct": "fuel_level",
     "hv_soc_pct": "battery_level",
     "range_km": "range",
+    # From schema 2 (app 3.6.3) odometer_km is only what the car read, and the
+    # app's own estimate (the km the user typed or the car gave once, plus the
+    # trips since) comes in odometer_estimated_km. Before, odometer_km took the
+    # estimate when the car was silent, and the sensor jumped between the two.
     "odometer_km": "odometer",
+    "odometer_estimated_km": "odometer_estimated",
     "battery_voltage": "battery_voltage",
     "coolant_temp_c": "coolant_temperature",
     "dtc_count": "trouble_codes",
@@ -101,6 +106,7 @@ EXTENDED_FLAGS: dict[str, str] = {"dpf_regen_active": "dpf_regenerating"}
 # connected (a trip_end after the engine is off).
 STICKY_KEYS = {
     "odometer",
+    "odometer_estimated",
     "range",
     "trouble_codes",
     "hv_battery_health",
@@ -132,6 +138,8 @@ EVENT_FIELDS = (
     "hv_soc_pct",
     "range_km",
     "odometer_km",
+    # Null from apps before 3.6.3 (schema 1).
+    "odometer_estimated_km",
     "battery_voltage",
     "dtc_count",
     "coolant_temp_c",

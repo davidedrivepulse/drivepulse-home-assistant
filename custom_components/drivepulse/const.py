@@ -16,7 +16,7 @@ EVENT_TRIP_END = "drivepulse_trip_end"
 # automations on "the car arrived" do not run for a trip of last week.
 EVENT_TRIP_RESENT = "drivepulse_trip_resent"
 
-# Messages the app sends (webhook schema 1).
+# Messages the app sends (webhook schema 1 and 2).
 MSG_TRIP_START = "trip_start"
 MSG_TRIP_END = "trip_end"
 MSG_TRIP_RESEND = "trip_resend"

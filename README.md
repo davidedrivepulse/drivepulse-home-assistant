@@ -16,7 +16,8 @@ For each vehicle (named as in the app) one device, **without the VIN** (the app 
 |---|---|
 | Fuel level / Battery level | Fuel tank percentage, or the high-voltage battery charge of an electric car. Only the one your car reports appears. |
 | Range | Estimated range, when the car gives it |
-| Odometer | Total distance, ready for maintenance reminders |
+| Odometer | Total distance as the car reads it, ready for maintenance reminders. From DrivePulse 3.6.3 it is only the car's own number: it no longer switches to the app's estimate when the car gives nothing |
+| Odometer (estimate) | The app's own estimate: the km you typed in the app (or the car gave once) plus the trips since. Appears with DrivePulse 3.6.3 or later. Use it if your car never gives its odometer |
 | 12 V battery | The car's 12 V battery voltage |
 | Coolant temperature | Engine coolant |
 | Trouble codes | Number of fault codes; the codes themselves (for example `P0420`) are in the `codes` attribute |
@@ -29,7 +30,7 @@ For each vehicle (named as in the app) one device, **without the VIN** (the app 
 | Extended readings | Oil, intake, outside, gearbox, catalyst and exhaust temperatures, particulate filter (DPF) temperature, load, soot and **DPF regenerating**, AdBlue level, high-voltage battery health and temperature, distances since the codes were cleared, and more. Each appears when the car first reports it. The ones that change every second (engine load, pedal, air flow, fuel trims, torque, power, ...) are disabled by default |
 | Custom PIDs | Every custom PID you set up in the app becomes a sensor named as in the app, from its first value. Rename it or change its unit in the app and the same sensor follows, with its history. A known unit (°C, V, A, kW, kWh, kPa, mbar, bar, psi, km/h, km, L, s, g, ...) gives Home Assistant's matching device class, so it can convert the unit; any other unit is shown as typed. `measured_at` is the time of the reading |
 
-When the car does not give a value, the entity shows **Unavailable** instead of a wrong number. The odometer, the range and the trouble codes keep their last known value between messages, because the app only sends them at the end of a trip. So do the AdBlue level, the high-voltage battery health and the distances since the codes were cleared or since the last DPF regeneration, which the car only gives while the adapter is connected.
+When the car does not give a value, the entity shows **Unavailable** instead of a wrong number. The odometer, the odometer estimate, the range and the trouble codes keep their last known value between messages, because the app only sends them at the end of a trip. So do the AdBlue level, the high-voltage battery health and the distances since the codes were cleared or since the last DPF regeneration, which the car only gives while the adapter is connected.
 
 ### When the car reads a value wrong
 
@@ -41,7 +42,7 @@ These events are fired on the Home Assistant bus, so you can automate "the car l
 
 | Event | When | Data |
 |---|---|---|
-| `drivepulse_trip_start` | a trip starts | `vehicle`, `device_id`, `sent_at`, `obd_at`, `fuel_level_pct`, `odometer_km`, `battery_voltage`, ... |
+| `drivepulse_trip_start` | a trip starts | `vehicle`, `device_id`, `sent_at`, `obd_at`, `fuel_level_pct`, `odometer_km`, `odometer_estimated_km`, `battery_voltage`, ... |
 | `drivepulse_trip_end` | a trip ends | the same, plus `trip` (distance, duration, average and maximum speed, consumption) |
 | `drivepulse_trip_resent` | you send a saved trip again from the trip's page in the app | `vehicle`, `device_id`, `sent_at`, `trip` |
 
@@ -161,7 +162,7 @@ actions:
 
 ### Inspection reminder
 
-First create a date helper: **Settings > Devices & services > Helpers > Create helper > Date and/or time**, name **Car inspection**, date only. Every time you arrive in the 30 days before that date, you get a reminder with the odometer.
+First create a date helper: **Settings > Devices & services > Helpers > Create helper > Date and/or time**, name **Car inspection**, date only. Every time you arrive in the 30 days before that date, you get a reminder with the odometer (the car's number, or the app's estimate when the car gives none).
 
 ```yaml
 alias: "DrivePulse: inspection reminder"
@@ -184,8 +185,11 @@ actions:
         {% set days = ((ts - as_timestamp(today_at())) / 86400) | round(0) | int %}
         {{ trigger.event.data.vehicle }}: the inspection is due
         in {{ days }} {{ 'day' if days == 1 else 'days' }}.
-        {%- if trigger.event.data.odometer_km is number %}
-        Odometer: {{ '{:,}'.format(trigger.event.data.odometer_km | round(0) | int) }} km.{% endif %}
+        {%- set km = trigger.event.data.odometer_km
+             if trigger.event.data.odometer_km is number
+             else trigger.event.data.odometer_estimated_km %}
+        {%- if km is number %}
+        Odometer: {{ '{:,}'.format(km | round(0) | int) }} km.{% endif %}
 ```
 
 ### Dashboard card
@@ -288,7 +292,8 @@ The webhook id in the address is the secret: anyone who has it can send data to 
 - One device per vehicle **name**. If you rename a vehicle in the app, a new device appears; delete the old one in Home Assistant (**Settings > Devices & services > DrivePulse**, open the device, **Delete**): the integration forgets that vehicle, so it does not come back after a restart and no longer counts against the limit. A vehicle with a trip in progress cannot be deleted until the trip ends.
 - Up to 20 vehicles per webhook; anything beyond that is ignored.
 - Messages the integration does not know are accepted and ignored, so a newer app does not show errors.
-- The message format is in [schema/drivepulse-schema-1.json](schema/drivepulse-schema-1.json) (JSON Schema 2020-12), for anyone who wants to receive DrivePulse messages somewhere else. It lists every key the app sends today. A newer app can add keys: ignore the ones you do not know. None of them will ever be a position, an address or the VIN.
+- **DrivePulse 3.6.3 and the odometer.** Up to app 3.6.2, `odometer_km` took the app's estimate at the end of a trip when the car gave nothing, so on cars where the two differ the **Odometer** sensor jumped back and forth. From 3.6.3 `odometer_km` is only the car's reading (empty when the car did not give it), and the app's estimate is in the new `odometer_estimated_km` field and the **Odometer (estimate)** sensor. If your car never gives its odometer, **Odometer** keeps its last value: use **Odometer (estimate)** in your automations and dashboards. Update this integration to 0.3.0 before or with the app.
+- The message format is in [schema/drivepulse-schema-2.json](schema/drivepulse-schema-2.json) (JSON Schema 2020-12; apps up to 3.6.2 send [schema 1](schema/drivepulse-schema-1.json)), for anyone who wants to receive DrivePulse messages somewhere else. It lists every key the app sends today. A newer app can add keys: ignore the ones you do not know. None of them will ever be a position, an address or the VIN.
 - Needs Home Assistant 2024.12 or newer.
 
 ## Troubleshooting

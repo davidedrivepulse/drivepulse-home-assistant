@@ -131,6 +131,16 @@ DESCRIPTIONS: dict[str, SensorEntityDescription] = {
             state_class=SensorStateClass.TOTAL_INCREASING,
             suggested_display_precision=1,
         ),
+        # The app's estimate (schema 2): its own entity, so the odometer above
+        # never jumps between the car's number and the estimate.
+        SensorEntityDescription(
+            key="odometer_estimated",
+            translation_key="odometer_estimated",
+            device_class=SensorDeviceClass.DISTANCE,
+            native_unit_of_measurement=UnitOfLength.KILOMETERS,
+            state_class=SensorStateClass.TOTAL_INCREASING,
+            suggested_display_precision=0,
+        ),
         SensorEntityDescription(
             key="battery_voltage",
             translation_key="battery_voltage",

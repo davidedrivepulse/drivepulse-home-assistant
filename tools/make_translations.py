@@ -31,7 +31,7 @@ T = {
         "local_only": "Local network only",
         "local_only_desc": "Accept data from the app only from your home network (or a VPN). Turn off to receive it from the internet through your HTTPS address.",
         "fuel_level": "Fuel level", "battery_level": "Battery level", "range": "Range",
-        "odometer": "Odometer", "battery_voltage": "12 V battery", "coolant_temperature": "Coolant temperature",
+        "odometer": "Odometer", "odometer_estimated": "Odometer (estimate)", "battery_voltage": "12 V battery", "coolant_temperature": "Coolant temperature",
         "trouble_codes": "Trouble codes", "fuel_volume": "Fuel", "speed": "Speed", "engine_speed": "Engine speed",
         "last_trip_distance": "Last trip", "trip_in_progress": "Trip in progress", "adapter_connected": "Adapter connected", "last_trip_duration": "Last trip duration", "last_trip_average_speed": "Last trip average speed", "last_trip_max_speed": "Last trip maximum speed", "last_trip_consumption": "Last trip average consumption", "last_trip_electric_consumption": "Last trip average electric consumption", "parked_at_home": "Parked at home",
     },
@@ -43,7 +43,7 @@ T = {
         "local_only": "Solo rete locale",
         "local_only_desc": "Accetta i dati dell'app solo dalla rete di casa (o da una VPN). Disattiva per riceverli da internet tramite il tuo indirizzo HTTPS.",
         "fuel_level": "Livello carburante", "battery_level": "Livello batteria", "range": "Autonomia",
-        "odometer": "Contachilometri", "battery_voltage": "Batteria 12 V", "coolant_temperature": "Temperatura refrigerante",
+        "odometer": "Contachilometri", "odometer_estimated": "Contachilometri (stima)", "battery_voltage": "Batteria 12 V", "coolant_temperature": "Temperatura refrigerante",
         "trouble_codes": "Codici errore", "fuel_volume": "Carburante", "speed": "Velocit\u00e0", "engine_speed": "Giri motore",
         "last_trip_distance": "Ultimo viaggio", "trip_in_progress": "Viaggio in corso", "adapter_connected": "Adattatore collegato", "last_trip_duration": "Durata ultimo viaggio", "last_trip_average_speed": "Velocit\u00e0 media ultimo viaggio", "last_trip_max_speed": "Velocit\u00e0 massima ultimo viaggio", "last_trip_consumption": "Consumo medio ultimo viaggio", "last_trip_electric_consumption": "Consumo elettrico medio ultimo viaggio", "parked_at_home": "Parcheggiata a casa",
     },
@@ -55,7 +55,7 @@ T = {
         "local_only": "Nur lokales Netzwerk",
         "local_only_desc": "Daten der App nur aus dem Heimnetz (oder per VPN) annehmen. Ausschalten, um sie \u00fcber Ihre HTTPS-Adresse aus dem Internet zu empfangen.",
         "fuel_level": "Tankf\u00fcllstand", "battery_level": "Batterieladung", "range": "Reichweite",
-        "odometer": "Kilometerstand", "battery_voltage": "12-V-Batterie", "coolant_temperature": "K\u00fchlmitteltemperatur",
+        "odometer": "Kilometerstand", "odometer_estimated": "Kilometerstand (gesch\u00e4tzt)", "battery_voltage": "12-V-Batterie", "coolant_temperature": "K\u00fchlmitteltemperatur",
         "trouble_codes": "Fehlercodes", "fuel_volume": "Kraftstoff", "speed": "Geschwindigkeit", "engine_speed": "Motordrehzahl",
         "last_trip_distance": "Letzte Fahrt", "trip_in_progress": "Fahrt l\u00e4uft", "adapter_connected": "Adapter verbunden", "last_trip_duration": "Dauer der letzten Fahrt", "last_trip_average_speed": "Durchschnittsgeschwindigkeit der letzten Fahrt", "last_trip_max_speed": "H\u00f6chstgeschwindigkeit der letzten Fahrt", "last_trip_consumption": "Durchschnittsverbrauch der letzten Fahrt", "last_trip_electric_consumption": "Durchschnittlicher Stromverbrauch der letzten Fahrt", "parked_at_home": "Zu Hause geparkt",
     },
@@ -67,7 +67,7 @@ T = {
         "local_only": "R\u00e9seau local uniquement",
         "local_only_desc": "N'accepter les donn\u00e9es de l'application que depuis votre r\u00e9seau domestique (ou un VPN). D\u00e9sactivez pour les recevoir depuis internet via votre adresse HTTPS.",
         "fuel_level": "Niveau de carburant", "battery_level": "Niveau de batterie", "range": "Autonomie",
-        "odometer": "Compteur kilom\u00e9trique", "battery_voltage": "Batterie 12 V", "coolant_temperature": "Temp\u00e9rature du liquide de refroidissement",
+        "odometer": "Compteur kilom\u00e9trique", "odometer_estimated": "Compteur kilom\u00e9trique (estimation)", "battery_voltage": "Batterie 12 V", "coolant_temperature": "Temp\u00e9rature du liquide de refroidissement",
         "trouble_codes": "Codes d'erreur", "fuel_volume": "Carburant", "speed": "Vitesse", "engine_speed": "R\u00e9gime moteur",
         "last_trip_distance": "Dernier trajet", "trip_in_progress": "Trajet en cours", "adapter_connected": "Adaptateur connect\u00e9", "last_trip_duration": "Dur\u00e9e du dernier trajet", "last_trip_average_speed": "Vitesse moyenne du dernier trajet", "last_trip_max_speed": "Vitesse maximale du dernier trajet", "last_trip_consumption": "Consommation moyenne du dernier trajet", "last_trip_electric_consumption": "Consommation \u00e9lectrique moyenne du dernier trajet", "parked_at_home": "Gar\u00e9e \u00e0 la maison",
     },
@@ -79,7 +79,7 @@ T = {
         "local_only": "Solo red local",
         "local_only_desc": "Aceptar los datos de la app solo desde tu red dom\u00e9stica (o una VPN). Desact\u00edvalo para recibirlos desde internet con tu direcci\u00f3n HTTPS.",
         "fuel_level": "Nivel de combustible", "battery_level": "Nivel de bater\u00eda", "range": "Autonom\u00eda",
-        "odometer": "Od\u00f3metro", "battery_voltage": "Bater\u00eda de 12 V", "coolant_temperature": "Temperatura del refrigerante",
+        "odometer": "Od\u00f3metro", "odometer_estimated": "Od\u00f3metro (estimado)", "battery_voltage": "Bater\u00eda de 12 V", "coolant_temperature": "Temperatura del refrigerante",
         "trouble_codes": "C\u00f3digos de error", "fuel_volume": "Combustible", "speed": "Velocidad", "engine_speed": "R\u00e9gimen del motor",
         "last_trip_distance": "\u00daltimo viaje", "trip_in_progress": "Viaje en curso", "adapter_connected": "Adaptador conectado", "last_trip_duration": "Duraci\u00f3n del \u00faltimo viaje", "last_trip_average_speed": "Velocidad media del \u00faltimo viaje", "last_trip_max_speed": "Velocidad m\u00e1xima del \u00faltimo viaje", "last_trip_consumption": "Consumo medio del \u00faltimo viaje", "last_trip_electric_consumption": "Consumo el\u00e9ctrico medio del \u00faltimo viaje", "parked_at_home": "Aparcado en casa",
     },
@@ -91,7 +91,7 @@ T = {
         "local_only": "Apenas rede local",
         "local_only_desc": "Aceitar os dados da app apenas a partir da sua rede dom\u00e9stica (ou de uma VPN). Desative para os receber da internet atrav\u00e9s do seu endere\u00e7o HTTPS.",
         "fuel_level": "N\u00edvel de combust\u00edvel", "battery_level": "N\u00edvel da bateria", "range": "Autonomia",
-        "odometer": "Od\u00f3metro", "battery_voltage": "Bateria de 12 V", "coolant_temperature": "Temperatura do l\u00edquido de arrefecimento",
+        "odometer": "Od\u00f3metro", "odometer_estimated": "Od\u00f3metro (estimado)", "battery_voltage": "Bateria de 12 V", "coolant_temperature": "Temperatura do l\u00edquido de arrefecimento",
         "trouble_codes": "C\u00f3digos de erro", "fuel_volume": "Combust\u00edvel", "speed": "Velocidade", "engine_speed": "Rota\u00e7\u00e3o do motor",
         "last_trip_distance": "\u00daltima viagem", "trip_in_progress": "Viagem em curso", "adapter_connected": "Adaptador ligado", "last_trip_duration": "Dura\u00e7\u00e3o da \u00faltima viagem", "last_trip_average_speed": "Velocidade m\u00e9dia da \u00faltima viagem", "last_trip_max_speed": "Velocidade m\u00e1xima da \u00faltima viagem", "last_trip_consumption": "Consumo m\u00e9dio da \u00faltima viagem", "last_trip_electric_consumption": "Consumo el\u00e9trico m\u00e9dio da \u00faltima viagem", "parked_at_home": "Estacionado em casa",
     },
@@ -103,7 +103,7 @@ T = {
         "local_only": "Jen m\u00edstn\u00ed s\u00ed\u0165",
         "local_only_desc": "P\u0159ij\u00edmat data z aplikace jen z dom\u00e1c\u00ed s\u00edt\u011b (nebo p\u0159es VPN). Vypn\u011bte, pokud chcete data p\u0159ij\u00edmat z internetu p\u0159es svou HTTPS adresu.",
         "fuel_level": "Hladina paliva", "battery_level": "Nabití baterie", "range": "Dojezd",
-        "odometer": "Po\u010d\u00edtadlo kilometr\u016f", "battery_voltage": "Baterie 12 V", "coolant_temperature": "Teplota chladic\u00ed kapaliny",
+        "odometer": "Po\u010d\u00edtadlo kilometr\u016f", "odometer_estimated": "Po\u010d\u00edtadlo kilometr\u016f (odhad)", "battery_voltage": "Baterie 12 V", "coolant_temperature": "Teplota chladic\u00ed kapaliny",
         "trouble_codes": "Chybov\u00e9 k\u00f3dy", "fuel_volume": "Palivo", "speed": "Rychlost", "engine_speed": "Ot\u00e1\u010dky motoru",
         "last_trip_distance": "Posledn\u00ed j\u00edzda", "trip_in_progress": "J\u00edzda prob\u00edh\u00e1", "adapter_connected": "Adapt\u00e9r p\u0159ipojen", "last_trip_duration": "Doba posledn\u00ed j\u00edzdy", "last_trip_average_speed": "Pr\u016fm\u011brn\u00e1 rychlost posledn\u00ed j\u00edzdy", "last_trip_max_speed": "Maxim\u00e1ln\u00ed rychlost posledn\u00ed j\u00edzdy", "last_trip_consumption": "Pr\u016fm\u011brn\u00e1 spot\u0159eba posledn\u00ed j\u00edzdy", "last_trip_electric_consumption": "Pr\u016fm\u011brn\u00e1 spot\u0159eba elekt\u0159iny posledn\u00ed j\u00edzdy", "parked_at_home": "Zaparkov\u00e1no doma",
     },
@@ -115,7 +115,7 @@ T = {
         "local_only": "Csak helyi h\u00e1l\u00f3zat",
         "local_only_desc": "Az alkalmaz\u00e1s adatait csak az otthoni h\u00e1l\u00f3zatr\u00f3l (vagy VPN-en kereszt\u00fcl) fogadja. Kapcsolja ki, ha az internetr\u0151l, a HTTPS-c\u00edm\u00e9n kereszt\u00fcl is szeretne adatot kapni.",
         "fuel_level": "\u00dczemanyagszint", "battery_level": "Akkumul\u00e1torszint", "range": "Hat\u00f3t\u00e1vols\u00e1g",
-        "odometer": "Kilom\u00e9ter\u00f3ra", "battery_voltage": "12 V-os akkumul\u00e1tor", "coolant_temperature": "H\u0171t\u0151folyad\u00e9k h\u0151m\u00e9rs\u00e9klete",
+        "odometer": "Kilom\u00e9ter\u00f3ra", "odometer_estimated": "Kilom\u00e9ter\u00f3ra (becsl\u00e9s)", "battery_voltage": "12 V-os akkumul\u00e1tor", "coolant_temperature": "H\u0171t\u0151folyad\u00e9k h\u0151m\u00e9rs\u00e9klete",
         "trouble_codes": "Hibak\u00f3dok", "fuel_volume": "\u00dczemanyag", "speed": "Sebess\u00e9g", "engine_speed": "Motorfordulatsz\u00e1m",
         "last_trip_distance": "Utols\u00f3 \u00fat", "trip_in_progress": "\u00dat folyamatban", "adapter_connected": "Adapter csatlakoztatva", "last_trip_duration": "Utols\u00f3 \u00fat id\u0151tartama", "last_trip_average_speed": "Utols\u00f3 \u00fat \u00e1tlagsebess\u00e9ge", "last_trip_max_speed": "Utols\u00f3 \u00fat legnagyobb sebess\u00e9ge", "last_trip_consumption": "Utols\u00f3 \u00fat \u00e1tlagfogyaszt\u00e1sa", "last_trip_electric_consumption": "Utols\u00f3 \u00fat \u00e1tlagos \u00e1ramfogyaszt\u00e1sa", "parked_at_home": "Otthon parkol",
     },
@@ -127,7 +127,7 @@ T = {
         "local_only": "Tylko sie\u0107 lokalna",
         "local_only_desc": "Przyjmuj dane z aplikacji tylko z sieci domowej (lub przez VPN). Wy\u0142\u0105cz, aby odbiera\u0107 je z internetu przez sw\u00f3j adres HTTPS.",
         "fuel_level": "Poziom paliwa", "battery_level": "Poziom baterii", "range": "Zasi\u0119g",
-        "odometer": "Przebieg", "battery_voltage": "Akumulator 12 V", "coolant_temperature": "Temperatura p\u0142ynu ch\u0142odz\u0105cego",
+        "odometer": "Przebieg", "odometer_estimated": "Przebieg (szacowany)", "battery_voltage": "Akumulator 12 V", "coolant_temperature": "Temperatura p\u0142ynu ch\u0142odz\u0105cego",
         "trouble_codes": "Kody b\u0142\u0119d\u00f3w", "fuel_volume": "Paliwo", "speed": "Pr\u0119dko\u015b\u0107", "engine_speed": "Obroty silnika",
         "last_trip_distance": "Ostatni przejazd", "trip_in_progress": "Przejazd w toku", "adapter_connected": "Adapter po\u0142\u0105czony", "last_trip_duration": "Czas ostatniego przejazdu", "last_trip_average_speed": "\u015arednia pr\u0119dko\u015b\u0107 ostatniego przejazdu", "last_trip_max_speed": "Maksymalna pr\u0119dko\u015b\u0107 ostatniego przejazdu", "last_trip_consumption": "\u015arednie zu\u017cycie w ostatnim przeje\u017adzie", "last_trip_electric_consumption": "\u015arednie zu\u017cycie energii w ostatnim przeje\u017adzie", "parked_at_home": "Zaparkowane w domu",
     },
@@ -139,7 +139,7 @@ T = {
         "local_only": "Doar re\u021bea local\u0103",
         "local_only_desc": "Accept\u0103 datele aplica\u021biei doar din re\u021beaua de acas\u0103 (sau printr-un VPN). Dezactiveaz\u0103 op\u021biunea ca s\u0103 le prime\u0219ti de pe internet, prin adresa ta HTTPS.",
         "fuel_level": "Nivel combustibil", "battery_level": "Nivel baterie", "range": "Autonomie",
-        "odometer": "Kilometraj", "battery_voltage": "Baterie 12 V", "coolant_temperature": "Temperatura lichidului de r\u0103cire",
+        "odometer": "Kilometraj", "odometer_estimated": "Kilometraj (estimat)", "battery_voltage": "Baterie 12 V", "coolant_temperature": "Temperatura lichidului de r\u0103cire",
         "trouble_codes": "Coduri de eroare", "fuel_volume": "Combustibil", "speed": "Vitez\u0103", "engine_speed": "Tura\u021bie motor",
         "last_trip_distance": "Ultima c\u0103l\u0103torie", "trip_in_progress": "C\u0103l\u0103torie \u00een curs", "adapter_connected": "Adaptor conectat", "last_trip_duration": "Durata ultimei c\u0103l\u0103torii", "last_trip_average_speed": "Viteza medie a ultimei c\u0103l\u0103torii", "last_trip_max_speed": "Viteza maxim\u0103 a ultimei c\u0103l\u0103torii", "last_trip_consumption": "Consumul mediu al ultimei c\u0103l\u0103torii", "last_trip_electric_consumption": "Consumul electric mediu al ultimei c\u0103l\u0103torii", "parked_at_home": "Parcat\u0103 acas\u0103",
     },
@@ -166,6 +166,9 @@ TRIP_SENSORS = [
     "last_trip_duration", "last_trip_average_speed", "last_trip_max_speed",
     "last_trip_consumption", "last_trip_electric_consumption",
 ]
+# The app's own odometer estimate (schema 2). Names only: a custom PID never
+# stands in for an estimate.
+APP_SENSORS = ["odometer_estimated"]
 
 
 def build(lang: str) -> dict:
@@ -190,7 +193,7 @@ def build(lang: str) -> dict:
             {k: t[k] for k in SENSORS},
         ),
         "entity": {
-            "sensor": {k: {"name": t[k]} for k in SENSORS + TRIP_SENSORS}
+            "sensor": {k: {"name": t[k]} for k in SENSORS + TRIP_SENSORS + APP_SENSORS}
             | {k: {"name": v} for k, v in extended_names(lang)[0].items()},
             "binary_sensor": {
                 "trip_in_progress": {"name": t["trip_in_progress"]},

@@ -108,6 +108,9 @@
       "last_trip_electric_consumption": {
         "name": "Durchschnittlicher Stromverbrauch der letzten Fahrt"
       },
+      "odometer_estimated": {
+        "name": "Kilometerstand (geschätzt)"
+      },
       "engine_load": {
         "name": "Motorlast"
       },

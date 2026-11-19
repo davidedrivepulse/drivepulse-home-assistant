@@ -108,6 +108,9 @@
       "last_trip_electric_consumption": {
         "name": "Średnie zużycie energii w ostatnim przejeździe"
       },
+      "odometer_estimated": {
+        "name": "Przebieg (szacowany)"
+      },
       "engine_load": {
         "name": "Obciążenie silnika"
       },

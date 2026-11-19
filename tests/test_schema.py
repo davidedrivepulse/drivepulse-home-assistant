@@ -1,5 +1,5 @@
-"""schema/drivepulse-schema-1.json describes what the app sends, and what this
-integration reads."""
+"""schema/drivepulse-schema-2.json describes what the app sends, and what this
+integration reads. schema/drivepulse-schema-1.json stays for apps up to 3.6.2."""
 
 from __future__ import annotations
 
@@ -20,14 +20,21 @@ from custom_components.drivepulse.hub import (
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SCHEMA = json.loads(
-    (ROOT / "schema/drivepulse-schema-1.json").read_text(encoding="utf-8")
+    (ROOT / "schema/drivepulse-schema-2.json").read_text(encoding="utf-8")
 )
 # Messages built by the app's own code (PayloadWebhook in the DrivePulse app,
 # made-up values), one per kind of message.
 APP_MESSAGES = json.loads(
-    (ROOT / "tests/schema1_app_messages.json").read_text(encoding="utf-8")
+    (ROOT / "tests/schema2_app_messages.json").read_text(encoding="utf-8")
 )
 VALIDATOR = Draft202012Validator(SCHEMA, format_checker=FormatChecker())
+# Apps up to 3.6.2: schema 1, and the messages they built.
+SCHEMA_1 = json.loads(
+    (ROOT / "schema/drivepulse-schema-1.json").read_text(encoding="utf-8")
+)
+APP_MESSAGES_1 = json.loads(
+    (ROOT / "tests/schema1_app_messages.json").read_text(encoding="utf-8")
+)
 
 NULLABLE = [
     "rpm",
@@ -43,11 +50,12 @@ NULLABLE = [
     "range_km",
     "hv_soc_pct",
     "odometer_km",
+    "odometer_estimated_km",
     "dtc",
 ]
 TEST = {
     "source": "drivepulse",
-    "schema": 1,
+    "schema": 2,
     "event": "test",
     "sent_at": "2026-10-10T08:00:00.000Z",
     "units": "metric",
@@ -210,7 +218,10 @@ def _trip(**changes: object) -> dict:
         ("a trip on trip_discarded", {**TEST, "event": "trip_discarded", "trip": TRIP}),
         ("trip_recovered without a trip", {**TEST, "event": "trip_recovered"}),
         ("a missing key", {k: v for k, v in LIVE.items() if k != "obd_at"}),
-        ("schema 2", {**LIVE, "schema": 2}),
+        ("schema 1", {**LIVE, "schema": 1}),
+        ("schema 3", {**LIVE, "schema": 3}),
+        ("the estimate missing", {k: v for k, v in LIVE.items() if k != "odometer_estimated_km"}),
+        ("the estimate as text", {**LIVE, "odometer_estimated_km": "45702.3"}),
         ("a null extended reading", {**LIVE, "extended": {"oil_temp_c": None}}),
         ("a custom key not cp<id>", {**LIVE, "custom": {"oil": LIVE["custom"]["cp3"]}}),
         ("both consumptions", _trip(avg_consumption_kwh_100km=1.0)),
@@ -221,3 +232,37 @@ def _trip(**changes: object) -> dict:
 )
 def test_what_the_app_never_sends_is_rejected(name: str, message: dict) -> None:
     assert _errors(message), name
+
+
+def test_schema_1_still_describes_the_apps_up_to_3_6_2() -> None:
+    Draft202012Validator.check_schema(SCHEMA_1)
+    old = Draft202012Validator(SCHEMA_1, format_checker=FormatChecker())
+    for name, message in APP_MESSAGES_1.items():
+        assert [e.message for e in old.iter_errors(message)] == [], name
+    assert "odometer_estimated_km" not in SCHEMA_1["properties"]
+
+
+def test_schema_2_is_schema_1_plus_the_estimate() -> None:
+    assert set(SCHEMA["properties"]) == set(SCHEMA_1["properties"]) | {
+        "odometer_estimated_km"
+    }
+    assert set(SCHEMA["required"]) == set(SCHEMA_1["required"]) | {
+        "odometer_estimated_km"
+    }
+    assert SCHEMA["properties"]["schema"]["const"] == 2
+    assert SCHEMA_1["properties"]["schema"]["const"] == 1
+
+
+def test_the_app_sends_the_car_reading_and_the_estimate_apart() -> None:
+    # The car read 45678.9, the app's estimate is 45702.3 (issue 6): each in
+    # its own key, in the same message, and the estimate never in odometer_km.
+    live = APP_MESSAGES["live tutto"]
+    assert live["odometer_km"] == 45678.9
+    assert live["odometer_estimated_km"] == 45702.3
+    home = APP_MESSAGES["trip_end a casa"]
+    assert home["odometer_km"] is None
+    assert home["odometer_estimated_km"] == 45702.3
+    for message in APP_MESSAGES.values():
+        assert message["odometer_km"] != message["odometer_estimated_km"] or (
+            message["odometer_km"] is None
+        )

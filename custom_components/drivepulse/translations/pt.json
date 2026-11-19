@@ -108,6 +108,9 @@
       "last_trip_electric_consumption": {
         "name": "Consumo elétrico médio da última viagem"
       },
+      "odometer_estimated": {
+        "name": "Odómetro (estimado)"
+      },
       "engine_load": {
         "name": "Carga do motor"
       },

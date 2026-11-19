@@ -16,7 +16,7 @@ from custom_components.drivepulse.hub import MAX_CUSTOM
 from .conftest import find, message
 
 APP = json.loads(
-    (Path(__file__).parent / "schema1_app_messages.json").read_text(encoding="utf-8")
+    (Path(__file__).parent / "schema2_app_messages.json").read_text(encoding="utf-8")
 )
 OIL = {"name": "Oil", "value": 64, "unit": "°C", "at": "2026-10-10T08:00:00.000Z"}
 

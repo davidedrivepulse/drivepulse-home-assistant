@@ -108,6 +108,9 @@
       "last_trip_electric_consumption": {
         "name": "Utolsó út átlagos áramfogyasztása"
       },
+      "odometer_estimated": {
+        "name": "Kilométeróra (becslés)"
+      },
       "engine_load": {
         "name": "Motorterhelés"
       },

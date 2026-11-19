@@ -108,6 +108,9 @@
       "last_trip_electric_consumption": {
         "name": "Consumul electric mediu al ultimei călătorii"
       },
+      "odometer_estimated": {
+        "name": "Kilometraj (estimat)"
+      },
       "engine_load": {
         "name": "Sarcină motor"
       },

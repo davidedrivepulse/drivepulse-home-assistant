@@ -108,6 +108,9 @@
       "last_trip_electric_consumption": {
         "name": "Průměrná spotřeba elektřiny poslední jízdy"
       },
+      "odometer_estimated": {
+        "name": "Počítadlo kilometrů (odhad)"
+      },
       "engine_load": {
         "name": "Zatížení motoru"
       },

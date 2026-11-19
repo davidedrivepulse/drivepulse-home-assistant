@@ -154,6 +154,8 @@ TRIP_FIELDS = (
     "avg_consumption_l_100km",
     "avg_consumption_kwh_100km",
     "odometer_km",
+    # Schema 2: where odometer_km comes from (cluster, cluster_end, app, null).
+    "odometer_source",
 )
 # Trip field -> sensor key, for the two consumption sensors of the last trip:
 # each appears with the first trip that has its number, so a petrol car never
@@ -277,6 +279,12 @@ class Vehicle:
     # back: the entity exists from then on.
     at_home: bool | None = None
     at_home_known: bool = False
+    # The schema of the message that gave the odometer value held now. Up to
+    # schema 1 (app 3.6.2) odometer_km could be the app's estimate; from
+    # schema 2 it is only what the car read. A value held from schema 1 is
+    # dropped at the first schema 2 message, so the Odometer sensor never
+    # keeps an old estimate (issue 6).
+    odometer_schema: int | None = None
 
     def as_dict(self) -> dict[str, Any]:
         """The part worth keeping across a restart: the sticky values only."""
@@ -295,16 +303,22 @@ class Vehicle:
             "last_trip": self.last_trip,
             "at_home": self.at_home,
             "at_home_known": self.at_home_known,
+            "odometer_schema": self.odometer_schema,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Vehicle:
         name = data.get("name") or DEFAULT_VEHICLE_NAME
+        values = dict(data.get("values", {}))
+        schema = data.get("odometer_schema")
+        if not (isinstance(schema, int) and not isinstance(schema, bool)):
+            # Kept by 0.2.x, which only knew schema 1: it may be an estimate.
+            schema = 1 if _number(values.get("odometer")) is not None else None
         return cls(
             name=name,
             slug=slugify(name) or slugify(DEFAULT_VEHICLE_NAME),
             keys=set(data.get("keys", [])),
-            values=dict(data.get("values", {})),
+            values=values,
             codes=data.get("codes"),
             custom=_custom_from_dict(data.get("custom")),
             in_trip=bool(data.get("in_trip", False)),
@@ -313,6 +327,7 @@ class Vehicle:
                 data["at_home"] if isinstance(data.get("at_home"), bool) else None
             ),
             at_home_known=bool(data.get("at_home_known", False)),
+            odometer_schema=schema,
         )
 
 
@@ -564,7 +579,7 @@ class DrivePulseHub:
         return self.sources.get(vehicle.slug, {}).get(key)
 
     @callback
-    def _apply_sources(self, vehicle: Vehicle) -> None:
+    def _apply_sources(self, vehicle: Vehicle, schema: int = 1) -> None:
         """Built-in sensors that read a custom PID instead of the app's number.
 
         In the built-in sensor's unit when Home Assistant can convert, as is
@@ -577,20 +592,31 @@ class DrivePulseHub:
             if pid is not None and pid.value is not None:
                 value = convert(pid.value, pid.unit, SOURCE_UNITS[key])
             self._set_number(vehicle, key, value)
+            if key == "odometer" and _number(value) is not None:
+                vehicle.odometer_schema = schema  # the car, through a PID
 
     @callback
     def _apply(self, vehicle: Vehicle, event: str, payload: dict[str, Any]) -> None:
         sources = self.sources.get(vehicle.slug, {})
+        schema = payload.get("schema")
+        if not (isinstance(schema, int) and not isinstance(schema, bool)):
+            schema = 1
+        if schema >= 2 and vehicle.odometer_schema == 1:
+            # Issue 6 (god, 19/11): never keep an old estimate as Odometer.
+            vehicle.values["odometer"] = None
+            vehicle.odometer_schema = None
         for webhook_key, key in NUMERIC_KEYS.items():
             if key in sources:
                 continue  # read from its custom PID below
             if webhook_key in payload:  # missing: an older app, no change
                 self._set_number(vehicle, key, payload[webhook_key])
+                if key == "odometer" and _number(payload[webhook_key]) is not None:
+                    vehicle.odometer_schema = schema
         if isinstance(payload.get("extended"), dict):
             self._apply_extended(vehicle, payload["extended"])
         if isinstance(payload.get("custom"), dict):  # app 3.5.9 and later
             self._apply_custom(vehicle, payload["custom"])
-            self._apply_sources(vehicle)
+            self._apply_sources(vehicle, schema)
 
         if isinstance(payload.get("dtc"), list):
             vehicle.codes = [

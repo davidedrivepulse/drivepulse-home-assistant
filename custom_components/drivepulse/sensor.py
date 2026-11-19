@@ -133,12 +133,17 @@ DESCRIPTIONS: dict[str, SensorEntityDescription] = {
         ),
         # The app's estimate (schema 2): its own entity, so the odometer above
         # never jumps between the car's number and the estimate.
+        # TOTAL and not TOTAL_INCREASING: the estimate can go DOWN (the user
+        # corrects the km in the app, deletes a trip or corrects its km).
+        # With TOTAL_INCREASING a drop starts a new cycle from 0 in the
+        # statistics; with TOTAL, without last_reset, the sum moves by the
+        # difference (Home Assistant developer docs, sensor state classes).
         SensorEntityDescription(
             key="odometer_estimated",
             translation_key="odometer_estimated",
             device_class=SensorDeviceClass.DISTANCE,
             native_unit_of_measurement=UnitOfLength.KILOMETERS,
-            state_class=SensorStateClass.TOTAL_INCREASING,
+            state_class=SensorStateClass.TOTAL,
             suggested_display_precision=0,
         ),
         SensorEntityDescription(

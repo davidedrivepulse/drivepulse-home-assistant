@@ -102,6 +102,8 @@ TRIP = {
     "max_speed_kmh": 110.0,
     "avg_consumption_l_100km": 6.0,
     "odometer_km": None,
+    # Schema 2 (app 3.6.3): always sent, null without odometer_km.
+    "odometer_source": None,
 }
 TRIP_END = {**TEST, "event": "trip_end", "trip_km": 21.46, "trip": TRIP}
 # A saved trip sent again by hand: the trip apart, every reading null.
